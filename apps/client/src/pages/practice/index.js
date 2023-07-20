@@ -60,6 +60,15 @@ export default function Practice() {
                 newMap[index].status = -1;
                 return newMap;
             });
+        } else if (event.ctrlKey && event.key === "Backspace") {
+            console.log("Ctrl+Backspace");
+            settextMap((prev) => {
+                const newMap = [...prev];
+                newMap.forEach((letter) => {
+                    letter.status = -1;
+                })
+                return newMap;
+            });
         }
     }
 
