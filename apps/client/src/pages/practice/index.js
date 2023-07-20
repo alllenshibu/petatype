@@ -13,11 +13,6 @@ export default function Practice() {
     console.log(toType);
 
     useEffect(() => {
-        textRef.current.focus();
-    })
-
-
-    useEffect(() => {
         //Create map with letters and color
         const map = toType.map((letter) => {
             return { letter: letter, status: -1 };
@@ -110,7 +105,9 @@ export default function Practice() {
 
             {/* <p className="text-3xl font-bold tracking-wider text-neutral-700">{!status ? "Wrong" : "Right"}</p> */}
             <div>
-                <input tabIndex="0" autoFocus="true" id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={() => {
+                <input onBlur={()=>{
+                     textRef.current.focus();
+                }} tabIndex="0" autoFocus="true" id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={() => {
                     setIndex(textRef.current.value.length - 1);
                     // if(status===0){
                     //     textRef.current.value = textRef.current.value.slice(0,textRef.current.value.length-1);
