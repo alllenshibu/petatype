@@ -8,9 +8,9 @@ export default function Solo() {
 
     useEffect(() => {
         socket.on('connect', () => {
-            console.log(socket.id)
+            console.log({ playerId: socket.id })
         })
-        socket.emit('new-player', "dfasfasdfs")
+        socket.emit('new-player')
     }, [])
 
     return (

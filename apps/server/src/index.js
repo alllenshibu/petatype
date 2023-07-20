@@ -29,27 +29,37 @@ io.on('connect', (socket) => {
     console.log('A user connected');
 
     // New Player
-    socket.on('new-player', async (data) => {
-        console.log({ sockerId: socket.id, data });
-        console.log('We have a new player');
-        await redis.set(socket.id, data, 'EX', '10');
-        await redis.disconnect()
+    socket.on('new-player', async () => {
+        console.log({ playerId: socket.id, message: "New Player" });
+
+        await redis.set(socket.id, JSON.stringify({
+            wpm: 0
+        }), 'EX', '60');
+
     })
 
 
     // Create New Lobby
-    socket.on('create-lobby', (data) => {
-        console.log(data);
-        console.log('We createing new lobby');
-        socket.join(data.room_id);
-        socket.to(data.room_id).emit('create-room', data);
+    socket.on('create-lobby', async (l) => {
+        const lobbyId = l ? l : socket.id;
+        console.log({ lobbyId, playerId: socket.id });
+
+        await redis.set(lobbyId, "do something", 'EX', '60');
     })
 
     // Join Lobby
-    socket.on('join-lobby', (data) => {
-        console.log(data);
-        socket.join(data.room_id);
-        socket.to(data.room_id).emit('join-room', data);
+    socket.on('join-lobby', async (l) => {
+        const lobbyId = l ? l : socket.id;
+        console.log({ lobbyId, playerId: socket.id });
+
+        await redis.get(lobbyId, (err, result) => {
+            console.log(result);
+        });
+    })
+
+    socket.on('close', async () => {
+        console.log('user disconnected');
+        redis.disconnect()
     })
 
 });

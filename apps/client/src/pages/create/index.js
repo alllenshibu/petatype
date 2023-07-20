@@ -2,18 +2,14 @@ import React, { useState, useEffect } from 'react'
 
 import socket from '@/configs/socketConfig'
 
-
 export default function Create() {
-
-    const [lobbyName, setLobbyName] = useState('')
+    const [lobbyId, setLobbyId] = useState('')
 
     const handleCreateNewLobby = async () => {
-
         socket.on('connect', () => {
-            console.log("dfafdfsd")
-            console.log(socket.id)
-            socket.emit('create-lobby', socket.id)
+            console.log({ playerId: socket.id })
         })
+        socket.emit('create-lobby', lobbyId)
     }
 
 
@@ -23,7 +19,9 @@ export default function Create() {
                 <p className="text-4xl font-mono">Create a new lobby</p>
             </div>
             <div className="flex flex-row justify-center items-center gap-4">
-                <input type="text" placeholder="Lobby name" />
+                <input onChange={(e) => {
+                    setLobbyId(e.target.value)
+                }} type="text" placeholder="Lobby name" />
                 <button onClick={handleCreateNewLobby}>Create</button>
             </div>
         </main>
