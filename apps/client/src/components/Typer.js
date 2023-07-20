@@ -1,16 +1,12 @@
 import { use, useEffect, useRef, useState } from "react";
 
-export default function Practice() {
-    const text = "If you're visiting this page, you're likely here because you're searching for a random sentence. Sometimes a random word just isn't enough, and that is where the random sentence generator comes into play. By inputting the desired number, you can make a list of as many random sentences as you want or need. Producing random sentences can be helpful in a number of different ways.";
+export default function Typer({ text, timer, setTimer, wpm, setWpm, accuracy, setAccuracy }) {
     const textRef = useRef(null);
     const [status, setStatus] = useState(0);
     const [textMap, settextMap] = useState([]);
     const toType = text.split('');
     const [index, setIndex] = useState(0);
 
-    const [timer, setTimer] = useState(30);
-    const [wpm, setWpm] = useState(0);
-    const [accuracy, setAccuracy] = useState(0);
 
     console.log(toType);
 
@@ -109,7 +105,7 @@ export default function Practice() {
     }
 
     return (
-        <main className="h-screen flex flex-col justify-center items-center gap-10">
+        <>
             <div className="flex flex-row justify-evenly items-center gap-10">
                 <div className="flex flex-row justify-center items-center gap-10 text-3xl font-mono">
                     <p>{timer}</p>
@@ -145,6 +141,6 @@ export default function Practice() {
                     // }
                 }} />
             </div>
-        </main>
+        </>
     )
 }
