@@ -8,6 +8,8 @@ export default function Practice() {
     const toType = text.split('');
     const [index, setIndex] = useState(0);
 
+    const [timer, setTimer] = useState(30);
+
     console.log(toType);
 
     useEffect(() => {
@@ -22,6 +24,17 @@ export default function Practice() {
         });
         settextMap(map);
         textRef.current.focus();
+
+
+
+
+        const interval = setInterval(() => {
+            setTimer((prev) => prev - 1);
+        }, 1000);
+
+        return () => {
+            clearInterval(interval); // Clear the interval when the component is unmounted
+        };
     }, [])
 
 
@@ -80,7 +93,7 @@ export default function Practice() {
     return (
         <main className="h-screen flex flex-col justify-center items-center gap-10">
             <div className="flex flex-row justify-center items-center gap-10 text-3xl font-mono">
-                <p>25</p>
+                <p>{timer}</p>
                 <p>22 WPM</p>
                 <p>94%</p>
             </div>
