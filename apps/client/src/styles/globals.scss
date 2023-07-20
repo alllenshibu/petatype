@@ -24,3 +24,23 @@
 #user-input {
     @apply opacity-0 absolute -bottom-10;
 }
+
+
+@keyframes cursor-blink {
+    0% {
+      opacity: 0;
+    }
+
+    99%{
+        opacity: 100%;
+    }
+  }
+  
+.blinker::after {
+    content: "";
+    width: 3px;
+    height: 20px;
+    background: #ffffff;
+    display: inline-block;
+    // animation: cursor-blink 1s steps(2) infinite;
+  }

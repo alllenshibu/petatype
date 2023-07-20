@@ -3,7 +3,6 @@ import { use, useEffect, useRef, useState } from "react";
 export default function Practice() {
     const text = "If you're visiting this page, you're likely here because you're searching for a random sentence. Sometimes a random word just isn't enough, and that is where the random sentence generator comes into play. By inputting the desired number, you can make a list of as many random sentences as you want or need. Producing random sentences can be helpful in a number of different ways.";
     const textRef = useRef(null);
-    const [status, setStatus] = useState(0);
     const [textMap, settextMap] = useState([]);
     const toType = text.split(' ');
     const [index, setIndex] = useState(0);
@@ -22,9 +21,6 @@ export default function Practice() {
         console.log(map)
         settextMap(map);
         textRef.current.focus();
-
-
-
 
         const interval = setInterval(() => {
             setTimer((prev) => prev - 1);
@@ -70,6 +66,7 @@ export default function Practice() {
         }
     }
 
+
     const handleBackSpace = (event) => {
         //spacebar
         if (event.key === " " && textRef.current.value.length !== 0) {
@@ -100,8 +97,8 @@ export default function Practice() {
                 <p>22 WPM</p>
                 <p>94%</p>
             </div> 
-            <div id="text-display">{textMap.map((word) => {
-                return (<span className="indent-3">{word.map((letter) => {
+            <div id="text-display">{textMap.map((word,outerInd) => {
+                return (<span className="indent-3">{word.map((letter,innerInd) => {
                     var colors = "grey";
                     if (letter.status === 1) {
                         colors = "green";
@@ -109,7 +106,7 @@ export default function Practice() {
                     else if (letter.status === 0) {
                         colors = "red";
                     }
-                    return <span style={{ color: colors }}>{letter.letter}</span>
+                    return <span className={(outerInd == index && innerInd == innerIndex)? "blinker":""} style={{ color: colors }}>{letter.letter}</span>
                 })} </span>)
             })}
             </div>
@@ -118,15 +115,15 @@ export default function Practice() {
             <div>
                 <input onBlur={()=>{
                      textRef.current.focus();
-                }} tabIndex="0" autoFocus="true" id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={() => {
-
-                    if(textRef.current.value.split(' ').slice(-1)[0].length > text.split(' ')[index].length){
+                }} tabIndex="0" autoFocus="true" id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={(event) => {
+                    console.log("Text Ref length " + textRef.current.value.split(' ').slice(-1)[0].length)
+                    console.log("Text Split " + text.split(' ')[index].length)
+                    if(innerIndex!= -1 && textRef.current.value.split(' ').slice(-1)[0].length > text.split(' ')[index].length ){
                         textRef.current.value = textRef.current.value.slice(0,textRef.current.value.length-1);
-                        return;
                     }
                     console.log("Text " + textRef.current.value)
-                    setinnerIndex(textRef.current.value.split(' ').slice(-1)[0].length - 1) //put 0 index
                     setIndex(textRef.current.value.split(' ').length - 1);
+                    setinnerIndex(textRef.current.value.split(' ').slice(-1)[0].length - 1) //put 0 index
                 }} />
             </div>
         </main>
