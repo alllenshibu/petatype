@@ -5,18 +5,21 @@ export default function Practice() {
     const textRef = useRef(null);
     const [status, setStatus] = useState(0);
     const [textMap, settextMap] = useState([]);
-    const toType = text.split('');
+    const toType = text.split(' ');
     const [index, setIndex] = useState(0);
+    const [innerIndex, setinnerIndex] = useState(-1);
 
     const [timer, setTimer] = useState(30);
 
-    console.log(toType);
 
     useEffect(() => {
         //Create map with letters and color
-        const map = toType.map((letter) => {
-            return { letter: letter, status: -1 };
+        const map = toType.map((word) => {
+            return  word.split('').map((letter) => {
+                return { letter: letter, status: -1 };
+            })
         });
+        console.log(map)
         settextMap(map);
         textRef.current.focus();
 
@@ -36,41 +39,46 @@ export default function Practice() {
     //to compare text with typed text
     useEffect(() => {
         //compare by text splice
-        handleTextInput();
-    }, [index]);
+        console.log("Inner Index " + innerIndex)
+        console.log("Index " + (textRef.current.value.split(' ').length - 1))
+        if(innerIndex != -1){
+            handleTextInput();
+        }
+    }, [innerIndex]);
 
     const handleTextInput = () => {
         if (textRef.current.value.length === 0) {
+            console.log("Zero length")
             return;
         }
-        const newText = text.substring(0, index + 1);
-        console.log(newText);
-        if (newText === textRef.current.value) {
-            setStatus(1);
-            console.log(textMap[index]);
 
-            settextMap((prev) => {
-                const newMap = [...prev];
-                newMap[index].status = 1;
-                return newMap;
-            })
-        } else {
-            setStatus(0);
-            console.log(textMap[index]);
-
-            settextMap((prev) => {
-                const newMap = [...prev];
-                newMap[index].status = 0;
-                return newMap;
-            });
+        for (let i = 0; i <= innerIndex; i++) {
+            if (textRef.current.value.split(' ').slice(-1)[0][i] !== text.split(' ')[index][i]) {
+                settextMap((prev) => {
+                    const newMap = [...prev];
+                    newMap[index][i].status = 0;
+                    return newMap;
+                });
+            }
+            else{
+                settextMap((prev) => {
+                    const newMap = [...prev];
+                    newMap[index][i].status = 1;
+                    return newMap;
+                });
+            }
         }
     }
 
     const handleBackSpace = (event) => {
-        if (event.key === "Backspace" && textRef.current.value.length !== 0) {
+        //spacebar
+        if (event.key === " " && textRef.current.value.length !== 0) {
+            setinnerIndex(-1);
+        }
+        if (event.key === "Backspace" && textRef.current.value.length !== 0 && innerIndex !== -1) {
             settextMap((prev) => {
                 const newMap = [...prev];
-                newMap[index].status = -1;
+                newMap[index][innerIndex].status = -1;
                 return newMap;
             });
         } else if (event.ctrlKey && event.key === "Backspace") {
@@ -91,27 +99,34 @@ export default function Practice() {
                 <p>{timer}</p>
                 <p>22 WPM</p>
                 <p>94%</p>
+            </div> 
+            <div id="text-display">{textMap.map((word) => {
+                return (<span className="indent-3">{word.map((letter) => {
+                    var colors = "grey";
+                    if (letter.status === 1) {
+                        colors = "green";
+                    }
+                    else if (letter.status === 0) {
+                        colors = "red";
+                    }
+                    return <span style={{ color: colors }}>{letter.letter}</span>
+                })} </span>)
+            })}
             </div>
-            <div id="text-display">{textMap.map((letter) => {
-                var colors = "grey";
-                if (letter.status === 1) {
-                    colors = "green";
-                }
-                else if (letter.status === 0) {
-                    colors = "red";
-                }
-                return <span style={{ color: colors }}>{letter.letter}</span>
-            })}</div>
 
             {/* <p className="text-3xl font-bold tracking-wider text-neutral-700">{!status ? "Wrong" : "Right"}</p> */}
             <div>
                 <input onBlur={()=>{
                      textRef.current.focus();
                 }} tabIndex="0" autoFocus="true" id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={() => {
-                    setIndex(textRef.current.value.length - 1);
-                    // if(status===0){
-                    //     textRef.current.value = textRef.current.value.slice(0,textRef.current.value.length-1);
-                    // }
+
+                    if(textRef.current.value.split(' ').slice(-1)[0].length > text.split(' ')[index].length){
+                        textRef.current.value = textRef.current.value.slice(0,textRef.current.value.length-1);
+                        return;
+                    }
+                    console.log("Text " + textRef.current.value)
+                    setinnerIndex(textRef.current.value.split(' ').slice(-1)[0].length - 1) //put 0 index
+                    setIndex(textRef.current.value.split(' ').length - 1);
                 }} />
             </div>
         </main>
