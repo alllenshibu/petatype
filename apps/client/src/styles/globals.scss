@@ -50,5 +50,14 @@
     height: 20px;
     background: #ffffff;
     display: inline-block;
-    // animation: cursor-blink 1s steps(2) infinite;
+    animation: cursor-blink 0.5s steps(2) infinite;
+  }
+
+.blinker-before::before {
+    content: "";
+    width: 3px;
+    height: 20px;
+    background: #ffffff;
+    display: inline-block;
+    animation: cursor-blink 1.5s steps(2) infinite;
   }

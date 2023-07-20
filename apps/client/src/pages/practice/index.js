@@ -37,6 +37,7 @@ export default function Practice() {
         if(innerIndex != -1){
             handleTextInput();
         }
+        console.log(innerIndex,index)
     }, [innerIndex]);
 
     useEffect(() => {
@@ -59,11 +60,10 @@ export default function Practice() {
                     incorrectLetterCount++;
                 }
             })
-            // Number of words completed = (Completed letters / 5)
-            // WPM = number of words completed / minutes elapsed
+
         })
-        setWpm(Math.round((completedLetterCount / 5) / (timeRemaining / 60)))
-        setAccuracy(Math.round((correctLetterCount / completedLetterCount) * 100))
+        setWpm(Math.round((completedLetterCount / 5) / (timeRemaining / 60))) // Number of words completed = (Completed letters / 5)           
+        setAccuracy(Math.round((correctLetterCount / completedLetterCount) * 100))         // WPM = number of words completed / minutes elapsed
     }
 
     const handleTextInput = () => {
@@ -82,7 +82,6 @@ export default function Practice() {
                 settextMap((prev) => {
                     const newMap = [...prev];
                     newMap[index][i].status = 1;
-                    console.log("Chaning" + i)
                     return newMap;
                 });
             }
@@ -132,13 +131,20 @@ export default function Practice() {
             <div id="text-display">{textMap.map((word,outerInd) => {
                 return (<span className="indent-3">{word.map((letter,innerInd) => {
                     var colors = "grey";
+                    var classname;
                     if (letter.status === 1) {
-                        colors = "green";
+                        colors = "white";
                     }
                     else if (letter.status === 0) {
-                        colors = "red";
+                        colors = "#ED2939";
                     }
-                    return <span className={(outerInd == index && innerInd == innerIndex)? "blinker":""} style={{ color: colors }}>{letter.letter}</span>
+                    if(innerIndex == -1 && innerInd == 0 && outerInd == index){
+                        classname = "blinker-before"
+                    }
+                    else if(outerInd == index && innerInd == innerIndex){
+                        classname = "blinker"
+                    }
+                    return <span className={classname} style={{ color: colors }}>{letter.letter}</span>
                 })} </span>)
             })}
             </div>
