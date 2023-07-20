@@ -5,9 +5,7 @@ import Link from 'next/link'
 export default function Home() {
 
   useEffect(() => {
-    socket.on('test', (msg) => {
-      console.log(msg)
-    })
+    socket.on('test', 'fdasfsdfa')
   }, [])
 
   return (
@@ -15,7 +13,7 @@ export default function Home() {
       <p className="text-5xl">PetaType</p>
       <div className='flex flex-row gap-4'>
         <button><Link href="practice">Practice</Link></button>
-        <button><Link href="#">Solo</Link></button>
+        <button><Link href="solo">Solo</Link></button>
         <button><Link href="create">New Lobby</Link></button>
         <button><Link href="join">Join Lobby</Link></button>
       </div>
