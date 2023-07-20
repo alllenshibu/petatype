@@ -1,11 +1,17 @@
 import React, { useEffect } from 'react'
 import socket from '@/configs/socketConfig'
 import Link from 'next/link'
+import { v4 as uuid } from 'uuid';
 
 export default function Home() {
+  const userID = uuid();
 
   useEffect(() => {
     socket.on('test', 'fdasfsdfa')
+    //If no uid in local storage
+    if(!localStorage.getItem('PetaTypeUiD')) {
+      localStorage.setItem('PetaTypeUiD', userID)
+    }
   }, [])
 
   return (
