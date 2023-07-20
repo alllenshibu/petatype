@@ -1,6 +1,21 @@
+import { set } from "mongoose";
 import { use, useEffect, useRef, useState } from "react";
 
-export default function Typer({ text, timer, setTimer, wpm, setWpm, accuracy, setAccuracy, speedTimeGraph, setSpeedTimeGraph, accuracyTimeGraph, setAccuracyTimeGraph }) {
+export default function Typer({
+    text,
+    active,
+    setActive,
+    timer,
+    setTimer,
+    wpm,
+    setWpm,
+    accuracy,
+    setAccuracy,
+    speedTimeGraph,
+    setSpeedTimeGraph,
+    accuracyTimeGraph,
+    setAccuracyTimeGraph }) {
+
     const textRef = useRef(null);
     const [textMap, settextMap] = useState([]);
     const toType = text.split(' ');
@@ -16,14 +31,6 @@ export default function Typer({ text, timer, setTimer, wpm, setWpm, accuracy, se
         });
         settextMap(map);
         textRef.current.focus();
-
-        const interval = setInterval(() => {
-            setTimer((prev) => prev - 1);
-        }, 1000);
-
-        return () => {
-            clearInterval(interval);
-        };
     }, [])
 
     //to compare text with typed text
@@ -122,21 +129,18 @@ export default function Typer({ text, timer, setTimer, wpm, setWpm, accuracy, se
 
     return (
         <>
+
             <div className="flex flex-row justify-evenly items-center gap-10">
                 <div className="flex flex-row justify-center items-center gap-10 text-3xl font-mono">
                     <p>{timer}</p>
                     <p>{wpm} WPM</p>
                     <p>{accuracy & accuracy}%</p>
                 </div>
-                <div>
-                    <select>
-                        <option value="easy">Easy</option>
-                        <option value="medium">Medium</option>
-                        <option value="hard">Hard</option>
-                    </select>
-                </div>
             </div>
-            <div id="text-display">{textMap.map((word, outerInd) => {
+            <div
+                id="text-display"
+                className={(active) ? "" : "opacity-20 blur-sm"}
+            >{textMap.map((word, outerInd) => {
                 return (<span className="indent-3">{word.map((letter, innerInd) => {
                     var colors = "grey";
                     var classname;
@@ -155,11 +159,11 @@ export default function Typer({ text, timer, setTimer, wpm, setWpm, accuracy, se
                     return <span className={classname} style={{ color: colors }}>{letter.letter}</span>
                 })} </span>)
             })}
-            </div>
+            </div >
             <div>
                 <input onBlur={() => {
                     textRef.current.focus();
-                }} tabIndex="0" autoFocus="true" id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={(event) => {
+                }} autoComplete="off" tabIndex="0" autoFocus="true" id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={(event) => {
                     if (innerIndex != -1 && textRef.current.value.split(' ').slice(-1)[0].length > text.split(' ')[index].length) {
                         textRef.current.value = textRef.current.value.slice(0, textRef.current.value.length - 1);
                     }

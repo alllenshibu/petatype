@@ -43,6 +43,16 @@ io.on('connect', (socket) => {
 
     })
 
+    // Solo Finish
+    socket.on('solo-finish', async (data) => {
+        console.log({ playerId: socket.id, message: "Solo Finish", data });
+
+        await redis.set(socket.id, JSON.stringify({
+            wpm: data.wpm,
+            accuracy: data.accuracy,
+        }), 'EX', 3600)
+    })
+
 
     // Create New Lobby
     socket.on('create-lobby', async (l) => {
