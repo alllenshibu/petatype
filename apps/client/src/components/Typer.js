@@ -159,7 +159,7 @@ export default function Typer({ text, timer, setTimer, wpm, setWpm, accuracy, se
             <div>
                 <input onBlur={() => {
                     textRef.current.focus();
-                }} tabIndex="0" autoFocus="true" id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={(event) => {
+                }} tabIndex="0" autoFocus={true} id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={(event) => {
                     if (innerIndex != -1 && textRef.current.value.split(' ').slice(-1)[0].length > text.split(' ')[index].length) {
                         textRef.current.value = textRef.current.value.slice(0, textRef.current.value.length - 1);
                     }
