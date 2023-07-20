@@ -3,86 +3,87 @@ import { useEffect, useRef, useState } from "react";
 export default function Practice() {
     const text = "If you're visiting this page, you're likely here because you're searching for a random sentence. Sometimes a random word just isn't enough, and that is where the random sentence generator comes into play. By inputting the desired number, you can make a list of as many random sentences as you want or need. Producing random sentences can be helpful in a number of different ways.";
     const textRef = useRef(null);
-    const [status,setStatus]=useState(0);
-    const [textMap,settextMap] = useState([]);
+    const [status, setStatus] = useState(0);
+    const [textMap, settextMap] = useState([]);
     const toType = text.split('');
-    const [index,setIndex] = useState(0);
+    const [index, setIndex] = useState(0);
 
     console.log(toType);
 
-    useEffect(()=>{
+    useEffect(() => {
         //Create map with letters and color
-       const map = toType.map((letter)=>{
-            return {letter:letter,status:-1};
+        const map = toType.map((letter) => {
+            return { letter: letter, status: -1 };
         });
         settextMap(map);
-    },[])
-   
-   
+        textRef.current.focus();
+    }, [])
+
+
     //to compare text with typed text
-    useEffect(()=>{
+    useEffect(() => {
         //compare by text splice
         handleTextInput();
-    },[index]);
+    }, [index]);
 
-    const handleTextInput = ()=>{
-        if(textRef.current.value.length===0){
+    const handleTextInput = () => {
+        if (textRef.current.value.length === 0) {
             return;
         }
-            const newText = text.substring(0,index+1);
-            console.log(newText);
-            if(newText===textRef.current.value){
-                setStatus(1);
-                console.log(textMap[index]);
+        const newText = text.substring(0, index + 1);
+        console.log(newText);
+        if (newText === textRef.current.value) {
+            setStatus(1);
+            console.log(textMap[index]);
 
-                settextMap((prev)=>{
-                    const newMap = [...prev];
-                    newMap[index].status=1;
-                    return newMap;
-                })
-            }else{
-                setStatus(0);
-                console.log(textMap[index]);
+            settextMap((prev) => {
+                const newMap = [...prev];
+                newMap[index].status = 1;
+                return newMap;
+            })
+        } else {
+            setStatus(0);
+            console.log(textMap[index]);
 
-                settextMap((prev)=>{
-                    const newMap = [...prev];
-                    newMap[index].status=0;
-                    return newMap;
-                });
-            }
+            settextMap((prev) => {
+                const newMap = [...prev];
+                newMap[index].status = 0;
+                return newMap;
+            });
+        }
     }
 
-    const handleBackSpace = (event)=>{
-        if(event.key==="Backspace" && textRef.current.value.length!==0){
-            settextMap((prev)=>{
+    const handleBackSpace = (event) => {
+        if (event.key === "Backspace" && textRef.current.value.length !== 0) {
+            settextMap((prev) => {
                 const newMap = [...prev];
-                newMap[index].status=-1;
+                newMap[index].status = -1;
                 return newMap;
             });
         }
     }
 
     return (
-        <main>
-            <p className="text-3xl font-bold tracking-wider text-neutral-700">{textMap.map((letter)=>{
+        <main className="h-screen flex flex-col justify-center items-center gap-10">
+            <div id="text-display">{textMap.map((letter) => {
                 var colors = "grey";
-                if(letter.status===1){
+                if (letter.status === 1) {
                     colors = "green";
                 }
-                else if(letter.status===0){
+                else if (letter.status === 0) {
                     colors = "red";
                 }
-                return <span style={{color: colors}}>{letter.letter}</span>
-            })}</p>
+                return <span style={{ color: colors }}>{letter.letter}</span>
+            })}</div>
 
-            <p className="text-3xl font-bold tracking-wider text-neutral-700">{!status? "Wrong": "Right"}</p>
+            {/* <p className="text-3xl font-bold tracking-wider text-neutral-700">{!status ? "Wrong" : "Right"}</p> */}
             <div>
-                <input ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={()=>{
-                    setIndex(textRef.current.value.length-1);
+                <input autoFocus="true" id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={() => {
+                    setIndex(textRef.current.value.length - 1);
                     // if(status===0){
                     //     textRef.current.value = textRef.current.value.slice(0,textRef.current.value.length-1);
                     // }
-                }}/>
+                }} />
             </div>
         </main>
     )
