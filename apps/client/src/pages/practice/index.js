@@ -7,12 +7,9 @@ export default function Practice() {
     const toType = text.split(' ');
     const [index, setIndex] = useState(0);
     const [innerIndex, setinnerIndex] = useState(-1);
-    const time = 30;
-    const [timer, setTimer] = useState(time);
-    const [wpm,setWpm] = useState(0);
-    const [correct,setCorrect] = useState(0);
-    const [accuracy,setAccuracy] = useState(0);
-
+    const [timer, setTimer] = useState(30);
+    const [wpm, setWpm] = useState(0);
+    const [accuracy, setAccuracy] = useState(0);
 
 
     useEffect(() => {
@@ -30,7 +27,7 @@ export default function Practice() {
         }, 1000);
 
         return () => {
-            clearInterval(interval); // Clear the interval when the component is unmounted
+            clearInterval(interval);
         };
     }, [])
 
@@ -41,6 +38,33 @@ export default function Practice() {
             handleTextInput();
         }
     }, [innerIndex]);
+
+    useEffect(() => {
+        computeStats();
+    }, [timer])
+
+    // Compute WPM and Accuracy
+    const computeStats = () => {
+        let completedLetterCount = 0
+        let correctLetterCount = 0
+        let incorrectLetterCount = 0
+        let timeRemaining = 30 - timer;
+        textMap.forEach((word) => {
+            word.forEach((letter) => {
+                if (letter.status === 1) {
+                    completedLetterCount++;
+                    correctLetterCount++;
+                } else if (letter.status === 0) {
+                    completedLetterCount++;
+                    incorrectLetterCount++;
+                }
+            })
+            // Number of words completed = (Completed letters / 5)
+            // WPM = number of words completed / minutes elapsed
+        })
+        setWpm(Math.round((completedLetterCount / 5) / (timeRemaining / 60)))
+        setAccuracy(Math.round((correctLetterCount / completedLetterCount) * 100))
+    }
 
     const handleTextInput = () => {
         if (textRef.current.value.length === 0) {
@@ -75,7 +99,6 @@ export default function Practice() {
             settextMap((prev) => {
                 const newMap = [...prev];
                 newMap[index][innerIndex].status = -1;
-                setCorrect((prev)=>prev-1);
                 return newMap;
             });
         } else if (event.ctrlKey && event.key === "Backspace") {
@@ -92,11 +115,20 @@ export default function Practice() {
 
     return (
         <main className="h-screen flex flex-col justify-center items-center gap-10">
-            <div className="flex flex-row justify-center items-center gap-10 text-3xl font-mono">
-                <p>{timer}</p>
-                <p>{wpm} WPM</p>
-                <p>94%</p>
-            </div> 
+            <div className="flex flex-row justify-evenly items-center gap-10">
+                <div className="flex flex-row justify-center items-center gap-10 text-3xl font-mono">
+                    <p>{timer}</p>
+                    <p>{wpm} WPM</p>
+                    <p>{accuracy & accuracy}%</p>
+                </div>
+                <div>
+                    <select>
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+            </div>
             <div id="text-display">{textMap.map((word,outerInd) => {
                 return (<span className="indent-3">{word.map((letter,innerInd) => {
                     var colors = "grey";
@@ -110,8 +142,6 @@ export default function Practice() {
                 })} </span>)
             })}
             </div>
-
-            {/* <p className="text-3xl font-bold tracking-wider text-neutral-700">{!status ? "Wrong" : "Right"}</p> */}
             <div>
                 <input onBlur={()=>{
                      textRef.current.focus();

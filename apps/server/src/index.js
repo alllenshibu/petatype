@@ -33,7 +33,12 @@ io.on('connect', (socket) => {
         console.log({ playerId: socket.id, message: "New Player" });
 
         await redis.set(socket.id, JSON.stringify({
-            wpm: 0
+            wpm: 0,
+            sessions: [{
+                wpm: 0,
+                accuracy: 0,
+                time: 0
+            }]
         }), 'EX', '60');
 
     })
