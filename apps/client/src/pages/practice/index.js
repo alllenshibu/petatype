@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 
 export default function Practice() {
     const text = "If you're visiting this page, you're likely here because you're searching for a random sentence. Sometimes a random word just isn't enough, and that is where the random sentence generator comes into play. By inputting the desired number, you can make a list of as many random sentences as you want or need. Producing random sentences can be helpful in a number of different ways.";
@@ -9,6 +9,11 @@ export default function Practice() {
     const [index, setIndex] = useState(0);
 
     console.log(toType);
+
+    useEffect(() => {
+        textRef.current.focus();
+    })
+
 
     useEffect(() => {
         //Create map with letters and color
@@ -74,6 +79,11 @@ export default function Practice() {
 
     return (
         <main className="h-screen flex flex-col justify-center items-center gap-10">
+            <div className="flex flex-row justify-center items-center gap-10 text-3xl font-mono">
+                <p>25</p>
+                <p>22 WPM</p>
+                <p>94%</p>
+            </div>
             <div id="text-display">{textMap.map((letter) => {
                 var colors = "grey";
                 if (letter.status === 1) {
@@ -87,7 +97,7 @@ export default function Practice() {
 
             {/* <p className="text-3xl font-bold tracking-wider text-neutral-700">{!status ? "Wrong" : "Right"}</p> */}
             <div>
-                <input autoFocus="true" id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={() => {
+                <input tabIndex="0" autoFocus="true" id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={() => {
                     setIndex(textRef.current.value.length - 1);
                     // if(status===0){
                     //     textRef.current.value = textRef.current.value.slice(0,textRef.current.value.length-1);
