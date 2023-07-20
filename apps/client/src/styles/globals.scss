@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    button {
+        @apply bg-neutral-500 text-white font-bold py-1 px-2 rounded;
+    }
+}
