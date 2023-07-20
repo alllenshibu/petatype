@@ -11,11 +11,14 @@ export default function Practice() {
     const [wpm, setWpm] = useState(0);
     const [accuracy, setAccuracy] = useState(0);
 
+    const [speedTimeGraph, setSpeedTimeGraph] = useState([]);
+    const [accuracyTimeGraph, setAccuracyTimeGraph] = useState([]);
+
 
     useEffect(() => {
         //Create map with letters and color
         const map = toType.map((word) => {
-            return  word.split('').map((letter) => {
+            return word.split('').map((letter) => {
                 return { letter: letter, status: -1 };
             })
         });
@@ -34,10 +37,10 @@ export default function Practice() {
     //to compare text with typed text
     useEffect(() => {
         //compare by text splice
-        if(innerIndex != -1){
+        if (innerIndex != -1) {
             handleTextInput();
         }
-        console.log(innerIndex,index)
+        console.log(innerIndex, index)
     }, [innerIndex]);
 
     useEffect(() => {
@@ -49,7 +52,7 @@ export default function Practice() {
         let completedLetterCount = 0
         let correctLetterCount = 0
         let incorrectLetterCount = 0
-        let timeRemaining = 30 - timer;
+        let timeElapsed = 30 - timer;
         textMap.forEach((word) => {
             word.forEach((letter) => {
                 if (letter.status === 1) {
@@ -62,8 +65,21 @@ export default function Practice() {
             })
 
         })
-        setWpm(Math.round((completedLetterCount / 5) / (timeRemaining / 60))) // Number of words completed = (Completed letters / 5)           
+        setWpm(Math.round((completedLetterCount / 5) / (timeElapsed / 60))) // Number of words completed = (Completed letters / 5)           
         setAccuracy(Math.round((correctLetterCount / completedLetterCount) * 100))         // WPM = number of words completed / minutes elapsed
+
+        let plot = [timeElapsed, wpm];
+        setSpeedTimeGraph((prev) => {
+            const newMap = [...prev];
+            newMap.push(plot);
+            return newMap;
+        })
+        plot = [timeElapsed, accuracy];
+        setAccuracyTimeGraph((prev) => {
+            const newMap = [...prev];
+            newMap.push(plot);
+            return newMap;
+        })
     }
 
     const handleTextInput = () => {
@@ -78,7 +94,7 @@ export default function Practice() {
                     return newMap;
                 });
             }
-            else{
+            else {
                 settextMap((prev) => {
                     const newMap = [...prev];
                     newMap[index][i].status = 1;
@@ -128,8 +144,8 @@ export default function Practice() {
                     </select>
                 </div>
             </div>
-            <div id="text-display">{textMap.map((word,outerInd) => {
-                return (<span className="indent-3">{word.map((letter,innerInd) => {
+            <div id="text-display">{textMap.map((word, outerInd) => {
+                return (<span className="indent-3">{word.map((letter, innerInd) => {
                     var colors = "grey";
                     var classname;
                     if (letter.status === 1) {
@@ -138,10 +154,10 @@ export default function Practice() {
                     else if (letter.status === 0) {
                         colors = "#ED2939";
                     }
-                    if(innerIndex == -1 && innerInd == 0 && outerInd == index){
+                    if (innerIndex == -1 && innerInd == 0 && outerInd == index) {
                         classname = "blinker-before"
                     }
-                    else if(outerInd == index && innerInd == innerIndex){
+                    else if (outerInd == index && innerInd == innerIndex) {
                         classname = "blinker"
                     }
                     return <span className={classname} style={{ color: colors }}>{letter.letter}</span>
@@ -149,11 +165,11 @@ export default function Practice() {
             })}
             </div>
             <div>
-                <input onBlur={()=>{
-                     textRef.current.focus();
+                <input onBlur={() => {
+                    textRef.current.focus();
                 }} tabIndex="0" autoFocus="true" id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={(event) => {
-                    if(innerIndex!= -1 && textRef.current.value.split(' ').slice(-1)[0].length > text.split(' ')[index].length ){
-                        textRef.current.value = textRef.current.value.slice(0,textRef.current.value.length-1);
+                    if (innerIndex != -1 && textRef.current.value.split(' ').slice(-1)[0].length > text.split(' ')[index].length) {
+                        textRef.current.value = textRef.current.value.slice(0, textRef.current.value.length - 1);
                     }
                     setIndex(textRef.current.value.split(' ').length - 1);
                     setinnerIndex(textRef.current.value.split(' ').slice(-1)[0].length - 1) //put 0 index
