@@ -34,6 +34,7 @@ exports.insertConnection = async (player_id , socket_id) =>{  //creates an insta
 
 exports.disconnectPlayer = async (socket_id) =>{
     try{
+        console.log(socket_id)
         const player_id = await pool.query("SELECT player_id FROM player_socket WHERE socket_id = $1" , [socket_id])
         console.log(player_id)
         await pool.query("DELETE FROM player_socket WHERE socket_id = $1 ",[socket_id])
