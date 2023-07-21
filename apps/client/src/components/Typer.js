@@ -5,6 +5,8 @@ export default function Typer({
     text,
     active,
     setActive,
+    gameEnded,
+    setGameEnded,
     timer,
     setTimer,
     progress,
@@ -20,33 +22,29 @@ export default function Typer({
 
     const textRef = useRef(null);
     const [textMap, settextMap] = useState([]);
-    const toType = text.split(' ');
+    const [toType, setToType] = useState(text.split(' ')) //array of words to type
     const [index, setIndex] = useState(0);
     const [innerIndex, setinnerIndex] = useState(-1);
+    const [previiousWpm, setPreviousWpm] = useState(0);
+    const [previousAccuracy, setPreviousAccuracy] = useState(0);
 
-    useEffect(() => {
+    const initTextMap = () => {
+        setToType(text.split(' '));
         //Create map with letters and color
+        console.log(text)
         const map = toType.map((word) => {
             return word.split('').map((letter) => {
                 return { letter: letter, status: -1 };
             })
         });
         settextMap(map);
-        textRef.current.focus();
-    }, [])
-
-    //to compare text with typed text
-    useEffect(() => {
-        //compare by text splice
-        if (innerIndex != -1) {
-            handleTextInput();
+        if (active) {
+            textRef.current.focus();
+            textRef.current.value = "";
         }
-        console.log(innerIndex, index)
-    }, [innerIndex]);
 
-    useEffect(() => {
-        computeStats();
-    }, [timer])
+        setinnerIndex(-1);
+    }
 
     // Compute WPM and Accuracy
     const computeStats = () => {
@@ -66,7 +64,7 @@ export default function Typer({
             })
 
         })
-        setWpm(Math.round((completedLetterCount / 5) / (timeElapsed / 60))) // Number of words completed = (Completed letters / 5)           
+        setWpm(Math.round((completedLetterCount) / (timeElapsed / 60))) // Number of words completed = (Completed letters / 5)           
         setAccuracy(Math.round((correctLetterCount / completedLetterCount) * 100))         // WPM = number of words completed / minutes elapsed
         setProgress(Math.round((completedLetterCount / text.length) * 100))
 
@@ -85,23 +83,25 @@ export default function Typer({
     }
 
     const handleTextInput = () => {
-        if (textRef.current.value.length === 0) {
-            return;
-        }
-        for (let i = 0; i <= innerIndex; i++) {
-            if (textRef.current.value.split(' ').slice(-1)[0][i] !== text.split(' ')[index][i]) {
-                settextMap((prev) => {
-                    const newMap = [...prev];
-                    newMap[index][i].status = 0;
-                    return newMap;
-                });
+        if (active) {
+            if (textRef.current.value.length === 0) {
+                return;
             }
-            else {
-                settextMap((prev) => {
-                    const newMap = [...prev];
-                    newMap[index][i].status = 1;
-                    return newMap;
-                });
+            for (let i = 0; i <= innerIndex; i++) {
+                if (textRef.current.value.split(' ').slice(-1)[0][i] !== text.split(' ')[index][i]) {
+                    settextMap((prev) => {
+                        const newMap = [...prev];
+                        newMap[index][i].status = 0;
+                        return newMap;
+                    });
+                }
+                else {
+                    settextMap((prev) => {
+                        const newMap = [...prev];
+                        newMap[index][i].status = 1;
+                        return newMap;
+                    });
+                }
             }
         }
     }
@@ -130,19 +130,85 @@ export default function Typer({
         }
     }
 
-    return (
-        <>
 
+    useEffect(() => {
+        computeStats();
+    })
+
+    useEffect(() => {
+        initTextMap()
+    }, [])
+
+    // Bug
+    useEffect(() => {
+        setToType(text.split(' '));
+    }, [text])
+
+    //to compare text with typed text
+    useEffect(() => {
+        //compare by text splice
+        if (innerIndex != -1 && active) {
+            handleTextInput();
+        }
+        console.log(innerIndex, index)
+    }, [innerIndex]);
+
+    useEffect(() => {
+        if (timer <= 0) {
+            setActive(false);
+            setTimer(10);
+            setGameEnded(true);
+            setPreviousWpm(wpm);
+            setPreviousAccuracy(accuracy);
+            setWpm(0);
+            setAccuracy(0);
+        }
+    }, [timer])
+
+    useEffect(() => {
+        let interval;
+        if (active && timer > 0) {
+            interval = setInterval(() => {
+                setTimer((prev) => prev - 1);
+            }, 1000);
+        }
+
+        return () => clearInterval(interval);
+    }, [active, timer]);
+
+    useEffect(() => {
+        if (gameEnded) {
+            initTextMap();
+            console.log("Initing textmap");
+        }
+    }, [gameEnded])
+
+
+    return (
+        <div className="flex flex-col justify-center items-center gap-4">
             <div className="flex flex-row justify-evenly items-center gap-10">
                 <div className="flex flex-row justify-center items-center gap-10 text-3xl font-mono">
                     <p>{timer}</p>
-                    <p>{wpm} WPM</p>
+                    <p>{wpm & wpm} WPM</p>
                     <p>{accuracy & accuracy}%</p>
                 </div>
             </div>
+            {!active && !gameEnded && (
+                <div className="absolute text-4xl tracking-widest">Click to start</div>
+            )}
+            {!active &&
+                gameEnded && (
+                    <div className="absolute text-4xl tracking-widest">
+                        <p>WPM: {wpm}</p>
+                        <p>Accuracy: {accuracy & accuracy}%</p>
+                        <p>Click to restart</p>
+                    </div>
+                )
+            }
             <div
                 id="text-display"
-                className={(active) ? "" : "opacity-100 blur-sm"}
+                className={"select-none " + ((active) ? "" : "opacity-10 blur-sm")}
+
             >{textMap.map((word, outerInd) => {
                 return (<span className="indent-3">{word.map((letter, innerInd) => {
                     var colors = "grey";
@@ -164,16 +230,34 @@ export default function Typer({
             })}
             </div >
             <div>
-                <input onBlur={() => {
-                    textRef.current.focus();
-                }} autoComplete="off" tabIndex="0" autoFocus={true} id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={(event) => {
-                    if (innerIndex != -1 && textRef.current.value.split(' ').slice(-1)[0].length > text.split(' ')[index].length) {
-                        textRef.current.value = textRef.current.value.slice(0, textRef.current.value.length - 1);
-                    }
-                    setIndex(textRef.current.value.split(' ').length - 1);
-                    setinnerIndex(textRef.current.value.split(' ').slice(-1)[0].length - 1) //put 0 index
-                }} />
+                {active &&
+
+                    <input onBlur={() => {
+                        textRef.current.focus();
+                    }}
+                        autoComplete="off"
+                        tabIndex="0"
+                        autoFocus="true"
+                        id="user-input"
+                        ref={textRef}
+                        onKeyDown={() => {
+                            if (active) {
+                                handleBackSpace
+                            }
+                        }}
+                        type="text"
+                        onChange={(event) => {
+                            if (active) {
+                                console.log("doing stuff")
+                                if (innerIndex != -1 && textRef.current.value.split(' ').slice(-1)[0].length > text.split(' ')[index].length) {
+                                    textRef.current.value = textRef.current.value.slice(0, textRef.current.value.length - 1);
+                                }
+                                setIndex(textRef.current.value.split(' ').length - 1);
+                                setinnerIndex(textRef.current.value.split(' ').slice(-1)[0].length - 1) //put 0 index
+                            }
+                        }} />
+                }
             </div>
-        </>
+        </div>
     )
 }
