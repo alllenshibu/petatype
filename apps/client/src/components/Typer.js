@@ -153,7 +153,7 @@ export default function Typer({
             </div>
             <div
                 id="text-display"
-                className={(active) ? "" : "opacity-20 blur-sm"}
+                className={(active) ? "" : "opacity-10 blur-sm"}
             >{textMap.map((word, outerInd) => {
                 return (<span className="indent-3">{word.map((letter, innerInd) => {
                     var colors = "grey";

@@ -22,8 +22,6 @@ export default function Practice() {
         setText(t);
     }
 
-
-
     useEffect(() => {
         if (timer <= 0) {
             fetchText();
@@ -36,7 +34,13 @@ export default function Practice() {
             onClick={(e) => {
                 e.preventDefault();
                 setActive(true);
-            }}>
+            }}
+            onKeyDown={(e) => {
+                setActive(true);
+            }}
+        >
+            {!active &&
+                <div className="absolute text-4xl tracking-widest">Click anywhere to start</div>}
             <Typer
                 text={text}
                 active={active}
