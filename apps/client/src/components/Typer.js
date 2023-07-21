@@ -64,7 +64,7 @@ export default function Typer({
             })
 
         })
-        setWpm(Math.round((completedLetterCount) / (timeElapsed / 60))) // Number of words completed = (Completed letters / 5)           
+        setWpm(Math.round((completedLetterCount / 5 ) / (timeElapsed / 60))) // Number of words completed = (Completed letters / 5)           
         setAccuracy(Math.round((correctLetterCount / completedLetterCount) * 100))         // WPM = number of words completed / minutes elapsed
         setProgress(Math.round((completedLetterCount / text.length) * 100))
 
