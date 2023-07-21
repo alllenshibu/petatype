@@ -3,11 +3,10 @@ const {pool} = require('../config');
 
 exports.createRoom = async (player_id ,room_name ,difficulty) =>{
             try{
-                const room_id =await  pool.query("INSERT INTO rooms (host_id, room_name , difficulty) VALUES ($1, $2, $3) RETURNING room_id",
+                const room_id =await  pool.query("INSERT INTO rooms (host_id, room_name , difficulty) VALUES ($1, $2, $3) RETURNING room_code",
                  [player_id, room_name, difficulty]) 
-                return room_id.rows[0]
+                return room_id.rows[0].room_code
             }
-            
             catch(err){
         console.log(err)
     }
@@ -17,7 +16,7 @@ exports.createRoom = async (player_id ,room_name ,difficulty) =>{
 exports.joinRoom = async (player_id , room_id) =>{
     try{
         await pool.query("BEGIN")
-        const is_full = await pool.query("SELECT COUNT(*) FROM joined WHERE room_id = $1", [room_id])
+        const is_full = await pool.query("SELECT COUNT(*) FROM joined WHERE room_code = $1", [room_id])
         if(is_full.rows[0].count >= 7 || is_full.rows[0].count <=0){
             await pool.query("ROLLBACK")
             return false
