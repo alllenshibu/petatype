@@ -49,13 +49,19 @@ const lobbySocket = (server) => {
         })
 
         socket.on('update-lobby',async(data)=>{
-            const {lobbyId,playerId} = data
+            const {lobbyId,playerId,playerData} = data
             console.log("Updating lobby")
 
             socket.join(lobbyId);
 
             const clients = io.sockets.adapter.rooms.get(lobbyId)
+
+            socket.to(lobbyId).emit('update-players',playerData)
             console.log(clients)
+        })
+
+        socket.on('end-game',async(data)=>{
+            
         })
 
         socket.on('disconnecting',async(data)=>{
