@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { v4 as uuid } from 'uuid';
-import { set } from 'mongoose';
+import axios from 'axios';
 
 
 const getRandomUsername = () => {
@@ -13,14 +13,22 @@ const getRandomUsername = () => {
 };
 
 export default function Home() {
-  const userID = uuid();
+  const [userID, setUserID] = useState("");
   const [newUser, setNewUser] = useState(true);
   const [userName, setUserName] = useState(getRandomUsername());
 
-  const handleCreateNewUser = () => {
-    localStorage.setItem('PetaTypeUiD', userID)
+  const handleCreateNewUser = async () => {
+    setUserID(uuid())
     localStorage.setItem('PetaTypeUName', userName)
-    setNewUser(false)
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/player/new`, { player_name: userName })
+    if (res.status === 200) {
+      console.log("Player created")
+      localStorage.setItem('PetaTypeUiD', res.data.player_id)
+      setNewUser(false)
+    } else {
+      console.log("Error creating player")
+      console.log(res)
+    }
   }
 
   useEffect(() => {

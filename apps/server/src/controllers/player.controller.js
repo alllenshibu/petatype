@@ -1,4 +1,4 @@
-const services = require('../redis.services/player.services');
+const services = require('../services/player.services');
 
 exports.createPlayerController = async (req, res) => {
     
@@ -10,6 +10,7 @@ exports.createPlayerController = async (req, res) => {
     }
 
     catch(err){
+        console.log(err);
         res.status(500).json({message:err.message});
     }
 }
