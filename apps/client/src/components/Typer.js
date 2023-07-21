@@ -133,7 +133,7 @@ export default function Typer({
             <div className="flex flex-row justify-evenly items-center gap-10">
                 <div className="flex flex-row justify-center items-center gap-10 text-3xl font-mono">
                     <p>{timer}</p>
-                    <p>{wpm} WPM</p>
+                    <p>{wpm & wpm} WPM</p>
                     <p>{accuracy & accuracy}%</p>
                 </div>
             </div>
