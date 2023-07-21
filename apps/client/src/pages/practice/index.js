@@ -2,8 +2,12 @@ import axios from "axios";
 import Typer from "@/components/Typer";
 import { useEffect, useState } from "react";
 
+
+const t = "If you're visiting this page, you're likely here because you're searching for a random sentence. Sometimes a random word just isn't enough, and that is where the random sentence generator comes into play. By inputting the desired number, you can make a list of as many random sentences as you want or need. Producing random sentences can be helpful in a number of different ways.";
+
+
 export default function Practice() {
-    const [text, setText] = useState("");
+    const [text, setText] = useState(t);
     const [textFetched, setTextFetched] = useState(false);
 
     const [active, setActive] = useState(false);
@@ -16,13 +20,13 @@ export default function Practice() {
     const [accuracyTimeGraph, setAccuracyTimeGraph] = useState([]);
 
     const fetchText = async () => {
-        const res = await axios.get("http://localhost:3001/text");
-        setText(res.data.text);
-        setTextFetched(true); // Set the textFetched state to true after fetching the text
+        // const res = await axios.get("http://localhost:3001/text");
+        // setText(res.data.text);
+        setTextFetched(t);
     };
 
     useEffect(() => {
-        fetchText(); // Trigger fetching of the text when the component mounts
+        fetchText();
     }, []);
 
     return (

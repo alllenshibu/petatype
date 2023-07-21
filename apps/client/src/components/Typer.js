@@ -31,6 +31,7 @@ export default function Typer({
         });
         settextMap(map);
         textRef.current.focus();
+        console.log(text );
     }, [])
 
     //to compare text with typed text
