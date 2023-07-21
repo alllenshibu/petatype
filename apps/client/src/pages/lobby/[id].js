@@ -32,13 +32,13 @@ export default function Lobby() {
     const [accuracyTimeGraph, setAccuracyTimeGraph] = useState([]);
     const router = useRouter()
 
-    const fetchText = async () => {
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/text`);
-        setText(res.data.text);
-        // setText(t);
-        console.log(res.data.text);
-        setTextFetched(true);
-    };
+    // const fetchText = async () => {
+    //     const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/text`);
+    //     setText(res.data.text);
+    //     // setText(t);
+    //     console.log(res.data.text);
+    //     setTextFetched(true);
+    // };
 
     const handleGameStart = () => {
         if (gameEnded === false) {
@@ -59,16 +59,23 @@ export default function Lobby() {
         socket.emit('update-lobby', data)
     }
 
-    const findPlayerIndex = (socketId, playerId) => {
+    const findPlayerIndex = (playerId) => {
         console.log("INDEX OF SEARCH FOR ADD " + playerId);
         console.log(players);
-        console.log(players.findIndex((player) => {
-            return (player.socketId === socketId || player.playerId === playerId)
+        return(players.findIndex((player) => {
+            return player.playerId === playerId
+        }))
+    }
+
+    const findBySocketId= (SocketID) => {
+        console.log(players);
+        return(players.findIndex((player) => {
+            return player.socketId === SocketID
         }))
     }
 
     useEffect(() => {
-        fetchText();
+        // fetchText();
         // Perform localStorage action
         const playerId = localStorage.getItem('PetaTypeUiD');
         setPlayers([{ name: playerId, wpm: 0, accuracy: 0, progress: 0, socketId: "Self" },])
@@ -83,18 +90,22 @@ export default function Lobby() {
 
             if (socket.disconnected) socket.connect();
             socket.on('add-player', (data) => {
-                const index = findPlayerIndex(data.socketId, data.playerId);
+                const index = findPlayerIndex(data.playerId);
                 console.log("Adding player with socket id " + data.socketId + " at index " + index)
                 if (index == -1) {
                     setPlayers((prev) => {
                         return [...prev, { name: data.playerId, playerId: data.playerId, wpm: 0, accuracy: 0, progress: 0, socketId: data.socketId }]
                     })
                 }
+                else{
+                    players[index].socketId = data.socketId;
+                    setPlayers([...players])
+                }
             });
 
             socket.on('remove-player', (socketId) => {
                 console.log("Removing player with socket id " + socketId);
-                const index = findPlayerIndex(socketId, 0);
+                const index = findBySocketId(socketId);
                 console.log("Found at index: " + index)
                 if (index != -1) {
                     players.splice(index, 1);
@@ -102,9 +113,7 @@ export default function Lobby() {
                 setPlayers([...players])
             });
 
-            // updateLobby({lobbyId:router.query.id,playerId:localStorage.getItem('PetaTypeUiD')});
-            socket.emit('join-lobby', { lobbyId: router.query.id, playerId: playerId }, () => {
-            })
+            updateLobby({lobbyId:router.query.id,playerId:localStorage.getItem('PetaTypeUiD')});
 
             socket.on('disconnect', () => {
                 socket.emit('message', "Disconnecting");
@@ -114,10 +123,13 @@ export default function Lobby() {
 
 
         return () => {
-            socket?.off('connect')
-            socket?.off('message')
-            socket?.off('disconnect')
-            socket?.off('connect_error')
+            socket?.removeAllListeners();
+            socket?.close();
+            // socket?.off('connect')
+            // socket?.off('message')
+            // socket?.off('disconnect')
+            // socket?.off('connect_error')
+            // socket?.off('add_player')
         }
     }, [socket, players])
 

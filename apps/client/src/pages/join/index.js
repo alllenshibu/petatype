@@ -13,9 +13,9 @@ export default function join() {
             if(!socket.connected){
                 socket.connect();
             }
-            router.push("/lobby/" + lobbyId+ "?lobbyName="+"LobbyName to find from db")
-            // socket.emit('join-lobby', { lobbyId: lobbyId, playerId: userId},()=>{
-            // })
+            socket.emit('join-lobby', { lobbyId: lobbyId, playerId: userId},()=>{
+                router.push("/lobby/" + lobbyId+ "?lobbyName="+"LobbyName to find from db")
+            })
         }
     }
 
