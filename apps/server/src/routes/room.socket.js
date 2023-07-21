@@ -64,9 +64,9 @@ const lobbySocket = (server) => {
 
         socket.on('disconnect',async(data)=>{
             console.log("Disconnected " + socket.id)
-           await playerServices.disconnectPlayer(socket.id)
+           const res = await playerServices.disconnectPlayer(socket.id)
 
-            socket.broadcast.emit('remove-player',socket.id)  //Poor performance need to store socket id and corresponsding room id to remove from that particular room
+            socket.broadcast.emit('remove-player',res)  //Poor performance need to store socket id and corresponsding room id to remove from that particular room
         })
     
         // Join Lobby
