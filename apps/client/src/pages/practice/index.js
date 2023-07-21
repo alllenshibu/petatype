@@ -67,16 +67,27 @@ export default function Practice() {
             {textFetched === true && (
                 <>
                     {!active &&
-                        <div className="flex flex-row justify-center items-center gap-10">
-                            <p>Mode</p>
-                            <select onChange={(e) => {
-                                setDifficulty(e.target.value);
-                                fetchText();
-                            }}>
-                                <option value="easy">Easy</option>
-                                <option value="medium">Medium</option>
-                                <option value="hard">Hard</option>
-                            </select>
+                        <div className="flex flex-row justify-center items-center gap-4">
+                            <div className="flex flex-row justify-center items-center gap-10">
+                                <p>Mode</p>
+                                <select onChange={(e) => {
+                                    setDifficulty(e.target.value);
+                                    fetchText();
+                                }}>
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                            </div>
+                            <div className="flex flex-row justify-center items-center gap-2">
+                                <p>Duration</p>
+                                <input
+                                    value={timer}
+                                    onChange={(e) => {
+                                        setTimer(e.target.value);
+                                    }} />
+
+                            </div>
                         </div>
                     }
 

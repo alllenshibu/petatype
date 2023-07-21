@@ -151,7 +151,7 @@ export default function Typer({
     }, [innerIndex]);
 
     useEffect(() => {
-        if (timer <= 0) {
+        if (timer <= 0 && active) {
             setActive(false);
             setTimer(10);
             setGameEnded(true);

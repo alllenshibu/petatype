@@ -1,3 +1,5 @@
+import axios from "axios";
+
 import { use, useEffect, useRef, useState } from "react";
 import socket from '@/configs/socketConfig'
 
@@ -22,12 +24,38 @@ export default function Practice() {
     const [accuracyTimeGraph, setAccuracyTimeGraph] = useState([]);
 
 
+    const fetchText = async () => {
+        console.log(difficulty);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/text?${difficulty}`);
+        setText(res.data.text);
+        // setText(t);
+        console.log(res.data.text);
+        setTextFetched(true);
+    };
+
+    const handleGameStart = async () => {
+        if (gameEnded === false) {
+            setActive(true);
+        } else if (gameEnded === true) {
+            setGameEnded(false);
+            setActive(true);
+            setTimer(10);
+            setWpm(0);
+            setAccuracy(0);
+            setSpeedTimeGraph([]);
+            setAccuracyTimeGraph([]);
+            setTextFetched(false);
+            await fetchText();
+        }
+    }
+
     const handleFinish = () => {
         console.log({ wpm, accuracy, speedTimeGraph, accuracyTimeGraph })
         socket.emit('solo-finish', { wpm, accuracy, speedTimeGraph, accuracyTimeGraph })
     }
 
     useEffect(() => {
+        fetchText();
 
         socket.on('connect', () => {
             console.log({ playerId: socket.id })
@@ -54,7 +82,7 @@ export default function Practice() {
     }, [timer])
 
     return (
-        <main
+       <main
             className="h-screen flex flex-col justify-center items-center gap-10"
             onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -68,16 +96,27 @@ export default function Practice() {
             {textFetched === true && (
                 <>
                     {!active &&
-                        <div className="flex flex-row justify-center items-center gap-10">
-                            <p>Mode</p>
-                            <select onChange={(e) => {
-                                setDifficulty(e.target.value);
-                                fetchText();
-                            }}>
-                                <option value="easy">Easy</option>
-                                <option value="medium">Medium</option>
-                                <option value="hard">Hard</option>
-                            </select>
+                        <div className="flex flex-row justify-center items-center gap-4">
+                            <div className="flex flex-row justify-center items-center gap-10">
+                                <p>Mode</p>
+                                <select onChange={(e) => {
+                                    setDifficulty(e.target.value);
+                                    fetchText();
+                                }}>
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                            </div>
+                            <div className="flex flex-row justify-center items-center gap-2">
+                                <p>Duration</p>
+                                <input
+                                    value={timer}
+                                    onChange={(e) => {
+                                        setTimer(e.target.value);
+                                    }} />
+
+                            </div>
                         </div>
                     }
 

@@ -194,43 +194,6 @@ export default function Lobby() {
                     }
                 </div>
 
-                {/* <div>
-                <div>
-                    <p>Lazy Fox</p>
-                    <div className='flex flex-row outline rounded-md animate-pulse'>
-                        <div className='h-2 w-48 bg-red-600'></div>
-                        <div className='h-2 w-48 bg-transparent'></div>
-                    </div>
-                </div>
-                <div>
-                    <p>Funny Weasel</p>
-                    <div className='flex flex-row outline rounded-md animate-pulse'>
-                        <div className='h-2 w-40 bg-red-600'></div>
-                        <div className='h-2 w-54 bg-transparent'></div>
-                    </div>
-                </div>
-                <div>
-                    <p>Cunning Owl</p>
-                    <div className='flex flex-row outline rounded-md'>
-                        <div className='h-2 w-10 bg-green-300'></div>
-                        <div className='h-2 w-84 bg-transparent'></div>
-                    </div>
-                </div>
-                <div>
-                    <p>Sassy Cat</p>
-                    <div className='flex flex-row outline rounded-md animate-pulse'>
-                        <div className='h-2 w-48 bg-red-600'></div>
-                        <div className='h-2 w-48 bg-transparent'></div>
-                    </div>
-                </div>
-                <div>
-                    <p className='font-bold tracking-widest'>You</p>
-                    <div className='flex flex-row outline rounded-md'>
-                        <div className='h-2 w-40 bg-green-300'></div>
-                        <div className='h-2 w-48 bg-transparent'></div>
-                    </div>
-                </div>
-            </div> */}
                 {!textFetched && (
                     <div className="absolute text-4xl tracking-widest">Loading...</div>
                 )}
@@ -253,6 +216,7 @@ export default function Lobby() {
                             !active &&
                             <div>{!gameEnded && countdown}</div>
                         }
+                        
                         <div
                             onClick={(e) => {
                                 e.preventDefault();
@@ -278,6 +242,18 @@ export default function Lobby() {
                                 accuracyTimeGraph={accuracyTimeGraph}
                                 setAccuracyTimeGraph={setAccuracyTimeGraph}
                             />
+                        </div>
+                        <div>
+                            {gameEnded &&
+                                players.map((player) => {
+                                    return (
+                                        <div className='flex flex-row justify-center items-center gap-4 text-xl'>
+                                            <p>{player.name}</p>
+                                            <p>{player.wpm} WPM</p>
+                                            <p>{player.accuracy} %</p>
+                                        </div>)
+                                })
+                            }
                         </div>
                     </>
 
