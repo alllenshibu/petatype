@@ -1,29 +1,17 @@
+const { getTextByDifficulty } = require("../services/text.services");
+
 exports.getText = async (req, res) => {
 
-    const difficulty = req?.query?.difficulty;
+    let difficulty = req?.query?.difficulty;
 
+    if (difficulty != 'easy' && difficulty != 'medium' && difficulty != 'hard')
+        difficulty = 'easy'
+    try {
 
-    switch (difficulty) {
-        case 'easy':
-            res.status(200).json({ message: 'Easy text' });
-            break;
-        case 'medium':
-            res.status(200).json({ message: 'Medium text' });
-            break;
-        case 'hard':
-            res.status(200).json({ message: 'Hard text' });
-            break;
-        default:
-            res.status(200).json({ message: 'Random text' });
-            break;
+        const text = await getTextByDifficulty(difficulty);
+        res.status(200).json({ text });
+    } catch (error) {
+        console.error("Error occurred:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 }
-
-exports.updatePlay = async (req, res) => {
-    const { player_id, room_id, wpm } = req.body
-    await played.updatePlay(player_id, room_id, wpm)
-    res.status(200).json({
-        message: "Play updated"
-    })
-}
-
