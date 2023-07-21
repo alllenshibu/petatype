@@ -15,7 +15,7 @@ const lobbySocket = (server) => {
         console.log('A user connected');
 
         
-        await playerServices.insertConnection(data.player_id,socket.id)
+        await playerServices.insertConnection(socket.handshake.query.playerId,socket.id)
     
         // New Player
         socket.on('new-player', (data , redirect) => {

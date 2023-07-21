@@ -5,7 +5,8 @@ const useSocket = ()=>{
     const [socket,setSocket] = useState(null)
   
     useEffect(() => {
-        const socketIo = io('http://localhost:3001');
+        const playerId = localStorage.getItem('PetaTypeUiD')
+        const socketIo = io('http://localhost:3001',{query:`playerId=${playerId}`});
         setSocket(socketIo)
   
         return () => {
