@@ -11,14 +11,16 @@ const lobbySocket = (server) => {
       });
 
 
-    io.on('connection', (socket) => {
+    io.on('connection', async (socket) => {
         console.log('A user connected');
+
+        
+        await playerServices.insertConnection(data.player_id,socket.id)
     
         // New Player
         socket.on('new-player', (data , redirect) => {
             console.log({ playerId: socket.id, message: "New Player" });
     
-            playerServices.insertConnection(socket.id , data.player_id)
             
         })
     
@@ -48,7 +50,7 @@ const lobbySocket = (server) => {
             redirect(); //Redirects to lobby page
         })
 
-        socket.on('update-lobby',(data)=>{
+        socket.on('update-lobby',async(data)=>{
             const {lobbyId,playerId} = data
             console.log("Updating lobby")
 
@@ -62,19 +64,19 @@ const lobbySocket = (server) => {
             console.log("Disconnecting special msg")
         })
 
-        socket.on('disconnect',(data)=>{
+        socket.on('disconnect',async(data)=>{
             console.log("Disconnected " + socket.id)
-           playerServices.disconnectPlayer(socket.id)
+           await playerServices.disconnectPlayer(socket.id)
 
             socket.broadcast.emit('remove-player',socket.id)  //Poor performance need to store socket id and corresponsding room id to remove from that particular room
         })
     
         // Join Lobby
-        socket.on('join-lobby', (data,redirect) => {
+        socket.on('join-lobby', async(data,redirect) => {
             const {playerId ,lobbyId} = data
 
 
-            roomServices.joinRoom(playerId,lobbyId)
+            await roomServices.joinRoom(playerId,lobbyId)
             //Check if lobby exist in DB and add player to lobby in DB (Call controller)
 
             socket.join(lobbyId);
