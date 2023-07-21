@@ -15,7 +15,7 @@ exports.insertPlay = async(player_id,room_id) => {
     }
 }
 
-exports.updatePlay = async(player_id,room_id , wpm) => {
+exports.updatePlay = async(player_id,room_id,wpm) => {
 
     try{
         await pool.query("UPDATE joined SET wpm = $1 WHERE player_id = $2 AND room_id = $3",[
@@ -27,4 +27,6 @@ exports.updatePlay = async(player_id,room_id , wpm) => {
         console.log(err)
     }
 }
+
+
 

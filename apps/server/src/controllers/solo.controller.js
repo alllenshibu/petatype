@@ -1,4 +1,4 @@
-const soloServices = require('../redis.services/solo.services');
+const soloServices = require('../services/solo.services');
 
 exports.createSoloController = async (req, res) => {
         
