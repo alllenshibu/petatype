@@ -6,7 +6,7 @@ const useSocket = ()=>{
   
     useEffect(() => {
         const playerId = localStorage.getItem('PetaTypeUiD')
-        const socketIo = io(NEXT_PUBLIC_API_URL);
+        const socketIo = io(process.env.NEXT_PUBLIC_API_URL);
         setSocket(socketIo)
 
         socketIo.on('connect',()=>{
