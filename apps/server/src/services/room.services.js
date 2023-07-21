@@ -19,7 +19,7 @@ exports.createRoom = async (player_id ,room_name ,difficulty) =>{
 exports.joinRoom = async (player_id , room_id) =>{
     try{
         await pool.query("BEGIN")
-        const is_full = await pool.query("SELECT COUNT(*) FROM joined , game_room WHERE game_code = $1", [room_id])
+        const is_full = await pool.query("SELECT COUNT(*) FROM joined , game_room WHERE room_code = $1", [room_id])
         if(is_full.rows[0].count >= 7 || is_full.rows[0].count <=0){
             await pool.query("ROLLBACK")
             return false
