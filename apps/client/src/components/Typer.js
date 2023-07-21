@@ -44,7 +44,22 @@ export default function Typer({
 
     useEffect(() => {
         computeStats();
+        if (timer <= 0) {
+            setActive(false);
+            setTimer(10);
+        }
     }, [timer])
+
+    useEffect(() => {
+        let interval;
+        if (active && timer > 0) {
+            interval = setInterval(() => {
+                setTimer((prev) => prev - 1);
+            }, 1000);
+        }
+
+        return () => clearInterval(interval);
+    }, [active, timer]);
 
     // Compute WPM and Accuracy
     const computeStats = () => {
@@ -128,8 +143,7 @@ export default function Typer({
     }
 
     return (
-        <>
-
+        <div className="flex flex-col justify-center items-center gap-4">
             <div className="flex flex-row justify-evenly items-center gap-10">
                 <div className="flex flex-row justify-center items-center gap-10 text-3xl font-mono">
                     <p>{timer}</p>
@@ -171,6 +185,6 @@ export default function Typer({
                     setinnerIndex(textRef.current.value.split(' ').slice(-1)[0].length - 1) //put 0 index
                 }} />
             </div>
-        </>
+        </div>
     )
 }
