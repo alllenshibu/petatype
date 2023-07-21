@@ -17,6 +17,7 @@ export default function Lobby() {
 
 
     const [timer, setTimer] = useState(30);
+    const [countdown, setCountdown] = useState(5);
 
     const [active, setActive] = useState(false);
     const [gameEnded, setGameEnded] = useState(false);
@@ -42,11 +43,18 @@ export default function Lobby() {
 
     const handleGameStart = () => {
         if (gameEnded === false) {
-            setActive(true);
+            let countdownInterval;
+
+            countdownInterval = setInterval(() => {
+                setCountdown((prev) => prev - 1);
+            }, 1000);
+
+            return () => clearInterval(countdownInterval);
         } else if (gameEnded === true) {
+            setTextFetched(false);
             setGameEnded(false);
             setActive(true);
-            setTimer(10);
+            setTimer(30);
             setWpm(0);
             setAccuracy(0);
             setSpeedTimeGraph([]);
@@ -135,6 +143,12 @@ export default function Lobby() {
             // socket?.off('add_player')
         }
     }, [socket, players])
+
+    useEffect(() => {
+        if (countdown === 0) {
+            setActive(true);
+        }
+    }, [countdown])
 
     useEffect(() => {
         fetchText();
@@ -230,7 +244,10 @@ export default function Lobby() {
                                 </select>
                             </div>
                         }
-
+                        {
+                            !active &&
+                            <div>{!gameEnded && countdown}</div>
+                        }
                         <div
                             onClick={(e) => {
                                 e.preventDefault();
