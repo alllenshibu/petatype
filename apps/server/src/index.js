@@ -21,9 +21,13 @@ app.use(bodyParser.json());
 
 app.use('/text', require('./routes/text.route'));
 
+app.use('/player', require('./routes/player.route'));
+
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
+
+
 
 app.use('/solo', require('./routes/solo.routes'));
 
