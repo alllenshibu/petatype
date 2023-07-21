@@ -58,13 +58,14 @@ const lobbySocket = (server) => {
             console.log(clients)
         })
 
-        socket.on('disconnect',async(data)=>{
+        socket.on('disconnecting',async(data)=>{
             console.log(socket.id)
-            //    const res = await playerServices.disconnectPlayer(socket.id)
-            console.log("Disconnecting Player Outside :  " + socket.playerId)
-            if(socket.playerId){
+               const res = await playerServices.disconnectPlayer(socket.id)
+            console.log("Disconnecting Player Outside :  " + socket.playerId + " Socket ID is " + socket.id + " Res is :")
+            console.log(res);
+            if(socket.id){
                 console.log("Disconnecting Inside "  + socket.playerId)
-                socket.broadcast.emit('remove-player',socket.playerId)  //Poor performance need to store socket id and corresponsding room id to remove from that particular room
+                socket.broadcast.emit('remove-player',socket.id)  //Poor performance need to store socket id and corresponsding room id to remove from that particular room
             }
         })
     

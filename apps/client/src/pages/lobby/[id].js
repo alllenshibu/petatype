@@ -106,14 +106,14 @@ export default function Lobby() {
                 }
             });
 
-            socket.on('remove-player', (playerId) => {
-                console.log("Removing player with Player id " + playerId);
-                const index = findPlayerIndex(playerId);
+            socket.on('remove-player', (socketId) => {
+                console.log("Removing player with Socket id " + socketId);
+                const index = findBySocketId(socketId);
                 console.log("Found at index: " + index)
                 if (index != -1) {
                     players.splice(index, 1);
+                    setPlayers([...players])
                 }
-                setPlayers([...players])
             });
 
             updateLobby({lobbyId:router.query.id,playerId:localStorage.getItem('PetaTypeUiD')});
