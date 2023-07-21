@@ -20,15 +20,16 @@ export default function Typer({
 
     const textRef = useRef(null);
     const [textMap, settextMap] = useState([]);
-    const toType = text.split(' ');
+    const [toType, setToType] = useState(text.split(' ')) //array of words to type
     const [index, setIndex] = useState(0);
     const [innerIndex, setinnerIndex] = useState(-1);
     const [previiousWpm, setPreviousWpm] = useState(0);
     const [previousAccuracy, setPreviousAccuracy] = useState(0);
 
     const initTextMap = () => {
-
+        setToType(text.split(' '));
         //Create map with letters and color
+        console.log(text)
         const map = toType.map((word) => {
             return word.split('').map((letter) => {
                 return { letter: letter, status: -1 };
@@ -132,6 +133,11 @@ export default function Typer({
         initTextMap()
     }, [])
 
+    // Bug
+    useEffect(() => {
+        setToType(text.split(' '));
+    }, [text])
+
     //to compare text with typed text
     useEffect(() => {
         //compare by text splice
@@ -189,14 +195,15 @@ export default function Typer({
                 gameEnded && (
                     <div className="absolute text-4xl tracking-widest">
                         <p>WPM: {wpm}</p>
-                        <p>Accuracy: {accuracy && accuracy}%</p>
+                        <p>Accuracy: {(accuracy === undefined) ? "d" : accuracy}%</p>
                         <p>Click to restart</p>
                     </div>
                 )
             }
             <div
                 id="text-display"
-                className={(active) ? "" : "opacity-10 blur-sm"}
+                className={"select-none " + ((active) ? "" : "opacity-10 blur-sm")}
+
             >{textMap.map((word, outerInd) => {
                 return (<span className="indent-3">{word.map((letter, innerInd) => {
                     var colors = "grey";

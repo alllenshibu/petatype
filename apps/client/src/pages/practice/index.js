@@ -8,7 +8,7 @@ const t = "If you're visiting this page, you're likely here because you're searc
 
 
 export default function Practice() {
-    const [text, setText] = useState(t);
+    const [text, setText] = useState("");
     const [textFetched, setTextFetched] = useState(false);
 
     const [active, setActive] = useState(false);
@@ -22,9 +22,11 @@ export default function Practice() {
     const [accuracyTimeGraph, setAccuracyTimeGraph] = useState([]);
 
     const fetchText = async () => {
-        // const res = await axios.get("http://localhost:3001/text");
-        // setText(res.data.text);
-        setTextFetched(t);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/text`);
+        setText(res.data.text);
+        // setText(t);
+        console.log(res.data.text);
+        setTextFetched(true);
     };
 
     const handleGameStart = () => {
@@ -38,11 +40,9 @@ export default function Practice() {
             setAccuracy(0);
             setSpeedTimeGraph([]);
             setAccuracyTimeGraph([]);
-            fetchText()
+            fetchText();
         }
     }
-
-
     useEffect(() => {
         fetchText();
     }, []);
@@ -59,7 +59,7 @@ export default function Practice() {
             {!textFetched && (
                 <div className="absolute text-4xl tracking-widest">Loading...</div>
             )}
-            {textFetched && (
+            {textFetched === true && (
                 <>
                     {!active &&
                         <div className="flex flex-row justify-center items-center gap-10">
