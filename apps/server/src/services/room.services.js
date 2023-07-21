@@ -41,12 +41,16 @@ exports.joinRoom = async (player_id , room_id) =>{
 exports.disconnect= async(player_id) =>{
 
     try{
-        const res = (await pool
-        .query("DELETE FROM joined WHERE player_id = $1 RETURNING room_id", [player_id])).rows[0].room_id
 
-        const room_code = (await pool.query("SELECT room_code FROM game_room WHERE room_id = $1", [res])).rows[0].room_code
+        const room_id = await pool.query("SELECT room_id FROM joined WHERE player_id = $1", [player_id])
+        console.log(room_id.rows[0].room_id)
+         await pool
+        .query("DELETE FROM joined WHERE player_id = $1", [player_id])
 
-        return room_code
+        const room_code = await pool.query("SELECT room_code FROM game_room WHERE room_id = $1", [room_id.rows[0].room_id])
+        console.log(room_code.rows[0].room_code)
+
+        return room_code.rows[0].room_code ? room_code.rows[0].room_code : null
     }
     catch(err){
         console.log(err)
