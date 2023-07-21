@@ -25,6 +25,12 @@ exports.joinRoom = async (player_id , room_id) =>{
             return false
         }
         const room_det = await pool.query("SELECT room_id FROM game_room WHERE room_code = $1", [room_id])
+        const rForCheckingWhetherUserExists = await pool.query("SELECT * FROM joined WHERE player_id = $1 AND room_id = $2", [player_id, room_det.rows[0].room_id])
+
+        if(rForCheckingWhetherUserExists.rows.length > 0){
+            await pool.query('DELETE FROM joined WHERE player_id = $1 AND room_id = $2', [player_id, room_det.rows[0].room_id])
+        }
+
         await pool
         .query("INSERT INTO joined (player_id, room_id) VALUES ($1, $2)",
          [player_id, room_det.rows[0].room_id])
