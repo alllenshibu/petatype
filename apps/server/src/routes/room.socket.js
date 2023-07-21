@@ -37,10 +37,10 @@ const lobbySocket = (server) => {
     
         // Create New Lobby
         socket.on('create-lobby',async (data,redirect)=>{
-            const {playerId , lobbyName} = data
+            const {playerId , lobbyName , difficulty} = data
 
             const socket_id = socket.id
-            const lobbyId = await roomServices.createRoom(playerId,socket_id ,lobbyName,"multi")
+            const lobbyId = await roomServices.createRoom(playerId,lobbyName ,difficulty)
             //Add lobby to DB (Call controller)
             console.log("Created Room " + lobbyId)
 
