@@ -40,6 +40,7 @@ const lobbySocket = (server) => {
             const socket_id = socket.id
             const lobbyId = await roomServices.createRoom(playerId,socket_id ,lobbyName,"multi")
             //Add lobby to DB (Call controller)
+            console.log("Created Room " + lobbyId)
 
             socket.join(lobbyId);
  
