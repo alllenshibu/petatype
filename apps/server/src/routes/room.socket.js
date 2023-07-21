@@ -15,7 +15,7 @@ const lobbySocket = (server) => {
         console.log('A user connected');
 
         
-        await playerServices.insertConnection(socket.player_id,socket.id)
+        await playerServices.insertConnection(socket.handshake.query.playerId,socket.id)
     
         // New Player
         socket.on('new-player', (data , redirect) => {
@@ -42,12 +42,13 @@ const lobbySocket = (server) => {
             const socket_id = socket.id
             const lobbyId = await roomServices.createRoom(playerId,socket_id ,lobbyName,"multi")
             //Add lobby to DB (Call controller)
+            console.log("Created Room " + lobbyId)
 
             socket.join(lobbyId);
  
             const clients = io.sockets.adapter.rooms.get(lobbyId)
             console.log(clients)
-            redirect(); //Redirects to lobby page
+            redirect(lobbyId); //Redirects to lobby page
         })
 
         socket.on('update-lobby',async(data)=>{

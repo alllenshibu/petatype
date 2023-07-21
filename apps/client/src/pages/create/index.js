@@ -10,12 +10,11 @@ export default function Create() {
     const router = useRouter();
 
     const handleCreateNewLobby = async () => {
-        const lobbyId = uuid();
         const userId = localStorage.getItem('PetaTypeUiD')
         if(!socket.connected){
             socket.connect();
         }
-        socket.emit('create-lobby', { lobbyName: lobbyName,lobbyId: lobbyId, playerId: userId},()=>{
+        socket.emit('create-lobby', { lobbyName: lobbyName,lobbyId: lobbyId, playerId: userId},({lobbyId})=>{
             router.push("/lobby/" + lobbyId+ "?lobbyName="+lobbyName)
         })
     }
