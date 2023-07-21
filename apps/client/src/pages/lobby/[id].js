@@ -14,7 +14,7 @@ export default function Lobby() {
 
     const [text, setText] = useState("");
     const [textFetched, setTextFetched] = useState(false);
-
+    const [difficulty, setDifficulty] = useState("easy");
 
     const [timer, setTimer] = useState(30);
     const [countdown, setCountdown] = useState(5);
@@ -41,7 +41,7 @@ export default function Lobby() {
         setTextFetched(true);
     };
 
-    const handleGameStart = () => {
+    const handleGameStart = async () => {
         if (gameEnded === false) {
             let countdownInterval;
 
@@ -51,15 +51,16 @@ export default function Lobby() {
 
             return () => clearInterval(countdownInterval);
         } else if (gameEnded === true) {
-            setTextFetched(false);
+
             setGameEnded(false);
-            setActive(true);
             setTimer(30);
             setWpm(0);
             setAccuracy(0);
             setSpeedTimeGraph([]);
             setAccuracyTimeGraph([]);
-            fetchText();
+            setTextFetched(false);
+            await fetchText();
+            setCountdown(5);
         }
     }
 
@@ -149,6 +150,10 @@ export default function Lobby() {
             setActive(true);
         }
     }, [countdown])
+
+    useEffect(() => {
+        fetchText();
+    }, [difficulty]);
 
     useEffect(() => {
         fetchText();
