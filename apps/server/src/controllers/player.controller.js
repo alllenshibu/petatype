@@ -2,11 +2,11 @@ const services = require('../redis.services/player.services');
 
 exports.createPlayerController = async (req, res) => {
     
-    const {player_name, socket_id} = req.body;
+    const {player_name} = req.body;
 
     try{
-        await services.createPlayer(player_name, socket_id);
-        res.status(200).json({message:"Player created"});
+        const player_id = await services.createPlayer(player_name);
+        res.status(200).json({message:"Player created" , player_id});
     }
 
     catch(err){
