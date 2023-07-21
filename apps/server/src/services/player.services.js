@@ -18,10 +18,10 @@ exports.createPlayer = async (player_name) =>{
 
 
 
-exports.insertConnection = async (player_id , socket_id) =>{  //creates an instance of player_socket , each player can have only one socket connection at a time ......
+const insertConnection = async (player_id , socket_id) =>{  //creates an instance of player_socket , each player can have only one socket connection at a time ......
 
     try{
-        const res = await pool.query("INSERT INTO player_socket (player_id,socket_id) VALUES($1,$2) ON CONFLICT(player_id) SET socket_id = $2 RETURNING player_id",[
+        const res = await pool.query("INSERT INTO player_socket (player_id,socket_id) VALUES($1,$2) ON CONFLICT (player_id) DO UPDATE SET socket_id = $2 RETURNING player_id",[
             player_id,socket_id
         ])
 
@@ -34,6 +34,8 @@ exports.insertConnection = async (player_id , socket_id) =>{  //creates an insta
     }
     
 }
+
+insertConnection("9283292e-47c9-4be3-aa5d-354a4b16f7db","123")
 
 exports.disconnectPlayer = async (socket_id) =>{
     try{
