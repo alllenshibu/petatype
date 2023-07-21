@@ -15,9 +15,6 @@ exports.createPlayer = async (player_name) =>{
     }
 }
 
-
-
-
 exports.insertConnection = async (player_id , socket_id) =>{  //creates an instance of player_socket , each player can have only one socket connection at a time ......
 
     try{
@@ -37,9 +34,13 @@ exports.insertConnection = async (player_id , socket_id) =>{  //creates an insta
 
 exports.disconnectPlayer = async (socket_id) =>{
     try{
-       const playerid = (await pool.query("DELETE FROM player_socket WHERE socket_id = $1 RETURNING player_id",[socket_id]).rows[0].player_id)
-       const room_code = await roomServices.disconnect(playerid.rows[0].player_id)
-         return {room_code:room_code , player_id :playerid}
+        const player_id = await pool.query("SELECT player_id FROM player_socket WHERE socket_id = $1" , [socket_id])
+        console.log(player_id)
+        await pool.query("DELETE FROM player_socket WHERE socket_id = $1 ",[socket_id])
+      
+        const room_code = await roomServices.disconnect(player_id.rows[0].player_id)
+        console.log(room_code)
+         return {room_code:room_code , player_id :player_id.rows[0].player_id}
     }
 
     catch(err){
