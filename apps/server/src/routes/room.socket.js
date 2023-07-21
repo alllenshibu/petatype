@@ -17,6 +17,7 @@ const lobbySocket = (server) => {
         // New Player
         socket.on('new-user', async(playerId) => {
             console.log("New user ID",playerId,socket.id)
+            socket.playerId = playerId;
             await playerServices.insertConnection(playerId,socket.id)
         })
     
@@ -63,10 +64,11 @@ const lobbySocket = (server) => {
         })
 
         socket.on('disconnect',async(data)=>{
-            console.log("Disconnected " + socket.id)
-           const res = await playerServices.disconnectPlayer(socket.id)
+            console.log("Disconnecting Player :  " + socket.playerId)
+            console.log(socket.id)
+        //    const res = await playerServices.disconnectPlayer(socket.id)
 
-            socket.to(res.room_code).emit('remove-player',socket.id)  //Poor performance need to store socket id and corresponsding room id to remove from that particular room
+            socket.broadcast.emit('remove-player',socket.id)  //Poor performance need to store socket id and corresponsding room id to remove from that particular room
         })
     
         // Join Lobby
