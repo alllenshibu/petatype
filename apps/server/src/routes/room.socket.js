@@ -14,14 +14,10 @@ const lobbySocket = (server) => {
     io.on('connection', async (socket) => {
         console.log('A user connected');
 
-        
-        await playerServices.insertConnection(socket.handshake.query.playerId,socket.id)
-    
         // New Player
-        socket.on('new-player', (data , redirect) => {
-            console.log({ playerId: socket.id, message: "New Player" });
-    
-            
+        socket.on('new-user', async(playerId) => {
+            console.log("New user ID",playerId,socket.id)
+            await playerServices.insertConnection(playerId,socket.id)
         })
     
         // Solo Finish
@@ -48,7 +44,7 @@ const lobbySocket = (server) => {
  
             const clients = io.sockets.adapter.rooms.get(lobbyId)
             console.log(clients)
-            redirect(lobbyId); //Redirects to lobby page
+            redirect({lobbyId}); //Redirects to lobby page
         })
 
         socket.on('update-lobby',async(data)=>{

@@ -6,8 +6,12 @@ const useSocket = ()=>{
   
     useEffect(() => {
         const playerId = localStorage.getItem('PetaTypeUiD')
-        const socketIo = io('http://localhost:3001',{query:`playerId=${playerId}`});
+        const socketIo = io(NEXT_PUBLIC_API_URL);
         setSocket(socketIo)
+
+        socketIo.on('connect',()=>{
+          socketIo.emit('new-user',playerId);
+        })
   
         return () => {
           socketIo.disconnect();
