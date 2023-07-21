@@ -1,5 +1,8 @@
 const { createRoom } = require('../controllers/room.controller');
 
+const roomServices = require('../services/room.services');
+const playerServices = require('../services/player.services');
+
 const lobbySocket = (server) => {
     const io = require('socket.io')(server, {
         cors: {
@@ -12,18 +15,11 @@ const lobbySocket = (server) => {
         console.log('A user connected');
     
         // New Player
-        socket.on('new-player', async () => {
+        socket.on('new-player', (data , redirect) => {
             console.log({ playerId: socket.id, message: "New Player" });
     
-            await redis.set(socket.id, JSON.stringify({
-                wpm: 0,
-                sessions: [{
-                    wpm: 0,
-                    accuracy: 0,
-                    time: 0
-                }]
-            }), 'EX', '60');
-    
+            playerServices.insertConnection(socket.id , data.player_id)
+            
         })
     
         // Solo Finish
@@ -39,12 +35,14 @@ const lobbySocket = (server) => {
     
         // Create New Lobby
         socket.on('create-lobby',(data,redirect)=>{
-            const {playerId , lobbyName , lobbyId} = data
+            const {playerId , lobbyName} = data
 
+            const socket_id = socket.id
+            const lobbyId = roomServices.createRoom(playerId,socket_id ,lobbyName,"multi")
             //Add lobby to DB (Call controller)
 
             socket.join(lobbyId);
-
+ 
             const clients = io.sockets.adapter.rooms.get(lobbyId)
             console.log(clients)
             redirect(); //Redirects to lobby page
@@ -66,6 +64,7 @@ const lobbySocket = (server) => {
 
         socket.on('disconnect',(data)=>{
             console.log("Disconnected " + socket.id)
+           playerServices.disconnectPlayer(socket.id)
 
             socket.broadcast.emit('remove-player',socket.id)  //Poor performance need to store socket id and corresponsding room id to remove from that particular room
         })
@@ -74,6 +73,8 @@ const lobbySocket = (server) => {
         socket.on('join-lobby', (data,redirect) => {
             const {playerId ,lobbyId} = data
 
+                
+            roomServices.joinRoom(playerId,lobbyId)
             //Check if lobby exist in DB and add player to lobby in DB (Call controller)
 
             socket.join(lobbyId);

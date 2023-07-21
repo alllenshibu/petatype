@@ -13,7 +13,7 @@ exports.getTextByDifficulty = async (difficulty) => {
     try {
         const selectedData = await new Promise((resolve, reject) => {
             const rows = [];
-            fs.createReadStream(
+            fs  .createReadStream(
                 difficulty === 'easy' ? EASY : difficulty === 'medium' ? MEDIUM : HARD
             )
                 .pipe(csvParser({ headers: true }))
@@ -25,9 +25,7 @@ exports.getTextByDifficulty = async (difficulty) => {
         const shuffledData = selectedData.sort(() => Math.random() - 0.5);
 
         const selectedRows = shuffledData.slice(0, TEXT_LENGTH);
-        const text = selectedRows.map((row) => row['_0']).join(' ')
-
-
+        const text = selectedRows.map((row) => row['_0']).join(' ');
         return text
     } catch (error) {
         console.error("Error occurred:", error);

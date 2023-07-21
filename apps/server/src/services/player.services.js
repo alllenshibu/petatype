@@ -1,22 +1,43 @@
-const pool = require('../config')
+const {pool} = require('../config')
 
-exports.createPlayer = async (player_name , socket_id) =>{
+const roomServices = require('./room.services')
+
+exports.createPlayer = async (player_name) =>{
+    try{
+        const player_id = await pool.query("INSERT INTO players (player_name) VALUES($1) RETURNING player_id",[
+            player_name
+        ])
+        return player_id.rows[0].player_id
+    }
+    catch(err){
+        console.log(err)
+        throw err
+    }
+}
+
+
+
+
+exports.insertConnection = async (player_name , socket_id) =>{  //creates an instance of player_socket , each player can have only one socket connection at a time ......
 
     try{
-        await pool.query("INSERT INTO player_socket (player_name,socket_id) VALUES($1,$2)",[
+        await pool.query("INSERT INTO player_socket (player_id,socket_id) VALUES($1,$2) ON CONFLICT(player_id) SET socket_id = $2",[
             player_name,socket_id
         ])
     }
 
     catch(err){
         console.log(err)
+        throw err
     }
     
 }
 
 exports.disconnectPlayer = async (socket_id) =>{
     try{
-        await pool.query("DELETE FROM player_socket WHERE socket_id = $1",[socket_id])
+       const playerid = await pool.query("DELETE FROM player_socket WHERE socket_id = $1 RETURNING player_id",[socket_id])
+         await roomServices.disconnect(player_id.rows[0].player_id)
+         return playerid.rows[0].player_id
     }
 
     catch(err){
