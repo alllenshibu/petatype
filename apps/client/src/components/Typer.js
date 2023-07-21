@@ -197,7 +197,7 @@ export default function Typer({
                 gameEnded && (
                     <div className="absolute text-4xl tracking-widest">
                         <p>WPM: {wpm}</p>
-                        <p>Accuracy: {(accuracy === undefined) ? "d" : accuracy}%</p>
+                        <p>Accuracy: {accuracy & accuracy}%</p>
                         <p>Click to restart</p>
                     </div>
                 )
