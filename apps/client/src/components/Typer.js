@@ -62,7 +62,7 @@ export default function Typer({
             })
 
         })
-        setWpm(Math.round((completedLetterCount / 5) / (timeElapsed / 60))) // Number of words completed = (Completed letters / 5)           
+        setWpm(Math.round((completedLetterCount) / (timeElapsed / 60))) // Number of words completed = (Completed letters / 5)           
         setAccuracy(Math.round((correctLetterCount / completedLetterCount) * 100))         // WPM = number of words completed / minutes elapsed
 
         let plot = [timeElapsed, wpm];
@@ -128,6 +128,9 @@ export default function Typer({
     }
 
 
+    useEffect(() => {
+        computeStats();
+    })
 
     useEffect(() => {
         initTextMap()
@@ -148,7 +151,6 @@ export default function Typer({
     }, [innerIndex]);
 
     useEffect(() => {
-        computeStats();
         if (timer <= 0) {
             setActive(false);
             setTimer(10);
