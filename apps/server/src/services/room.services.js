@@ -24,10 +24,10 @@ exports.joinRoom = async (player_id , room_id) =>{
             await pool.query("ROLLBACK")
             return false
         }
-        const room_id = await pool.query("SELECT room_id FROM game_room WHERE room_code = $1", [room_id])
+        const room_det = await pool.query("SELECT room_id FROM game_room WHERE room_code = $1", [room_id])
         await pool
         .query("INSERT INTO joined (player_id, room_id) VALUES ($1, $2)",
-         [player_id, room_id[0].room_id])
+         [player_id, room_det[0].room_id])
 
         await pool.query("COMMIT")
     }
