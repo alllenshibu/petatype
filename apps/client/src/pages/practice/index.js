@@ -8,13 +8,16 @@ const t = "If you're visiting this page, you're likely here because you're searc
 
 
 export default function Practice() {
+
+    const [difficulty, setDifficulty] = useState("easy"); // ["easy","medium","hard"
+
     const [text, setText] = useState("");
     const [textFetched, setTextFetched] = useState(false);
 
     const [active, setActive] = useState(false);
     const [gameEnded, setGameEnded] = useState(false);
     const [timer, setTimer] = useState(10);
-    const [progress,setProgress] = useState(0); 
+    const [progress, setProgress] = useState(0);
 
     const [wpm, setWpm] = useState(0);
     const [accuracy, setAccuracy] = useState(0);
@@ -22,7 +25,8 @@ export default function Practice() {
     const [accuracyTimeGraph, setAccuracyTimeGraph] = useState([]);
 
     const fetchText = async () => {
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/text`);
+        console.log(difficulty);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/text?${difficulty}`);
         setText(res.data.text);
         // setText(t);
         console.log(res.data.text);
@@ -64,7 +68,10 @@ export default function Practice() {
                     {!active &&
                         <div className="flex flex-row justify-center items-center gap-10">
                             <p>Mode</p>
-                            <select>
+                            <select onChange={(e) => {
+                                setDifficulty(e.target.value);
+                                fetchText();
+                            }}>
                                 <option value="easy">Easy</option>
                                 <option value="medium">Medium</option>
                                 <option value="hard">Hard</option>

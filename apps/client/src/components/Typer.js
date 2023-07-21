@@ -1,5 +1,6 @@
 import { set } from "mongoose";
 import { use, useEffect, useRef, useState } from "react";
+import Chart from "./Chart";
 
 export default function Typer({
     text,
@@ -31,7 +32,7 @@ export default function Typer({
     const initTextMap = () => {
         setToType(text.split(' '));
         //Create map with letters and color
-        console.log(text)
+        // console.log(text)
         const map = toType.map((word) => {
             return word.split('').map((letter) => {
                 return { letter: letter, status: -1 };
@@ -43,6 +44,7 @@ export default function Typer({
             textRef.current.value = "";
         }
 
+        setIndex(0);
         setinnerIndex(-1);
     }
 
@@ -64,7 +66,7 @@ export default function Typer({
             })
 
         })
-        setWpm(Math.round((completedLetterCount / 5 ) / (timeElapsed / 60))) // Number of words completed = (Completed letters / 5)           
+        setWpm(Math.round((completedLetterCount) / (timeElapsed / 60))) // Number of words completed = (Completed letters / 5)           
         setAccuracy(Math.round((correctLetterCount / completedLetterCount) * 100))         // WPM = number of words completed / minutes elapsed
         setProgress(Math.round((completedLetterCount / text.length) * 100))
 
@@ -130,11 +132,6 @@ export default function Typer({
         }
     }
 
-
-    useEffect(() => {
-        computeStats();
-    })
-
     useEffect(() => {
         initTextMap()
     }, [])
@@ -150,7 +147,7 @@ export default function Typer({
         if (innerIndex != -1 && active) {
             handleTextInput();
         }
-        console.log(innerIndex, index)
+        // console.log(innerIndex, index)
     }, [innerIndex]);
 
     useEffect(() => {
@@ -163,6 +160,7 @@ export default function Typer({
             setWpm(0);
             setAccuracy(0);
         }
+        computeStats();
     }, [timer])
 
     useEffect(() => {
@@ -179,7 +177,6 @@ export default function Typer({
     useEffect(() => {
         if (gameEnded) {
             initTextMap();
-            console.log("Initing textmap");
         }
     }, [gameEnded])
 
@@ -199,9 +196,10 @@ export default function Typer({
             {!active &&
                 gameEnded && (
                     <div className="absolute text-4xl tracking-widest">
-                        <p>WPM: {wpm}</p>
-                        <p>Accuracy: {accuracy & accuracy}%</p>
+                        <p>WPM: {previiousWpm}</p>
+                        <p>Accuracy: {previousAccuracy & previousAccuracy}%</p>
                         <p>Click to restart</p>
+                        {/* <Chart speedTimeGraph={speedTimeGraph} accuracyTimeGraph={accuracyTimeGraph} /> */}
                     </div>
                 )
             }
@@ -248,7 +246,6 @@ export default function Typer({
                         type="text"
                         onChange={(event) => {
                             if (active) {
-                                console.log("doing stuff")
                                 if (innerIndex != -1 && textRef.current.value.split(' ').slice(-1)[0].length > text.split(' ')[index].length) {
                                     textRef.current.value = textRef.current.value.slice(0, textRef.current.value.length - 1);
                                 }
