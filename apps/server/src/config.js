@@ -1,5 +1,4 @@
-const { Pool } = require('pg');
-const Redis = require('ioredis');
+const {Redis} = require('ioredis');
 
 require('dotenv').config();
 
@@ -13,8 +12,8 @@ const redis = new Redis({
 });
 
 
-const pool = new Pool({
-  connectionString: process.env.SUPABASE_URL,
-});
+// const pool = new Pool({
+//   connectionString: process.env.SUPABASE_URL,
+// });
 
-module.exports = { pool, redis };
+module.exports = { redis };

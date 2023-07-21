@@ -7,7 +7,6 @@ exports.getText = async (req, res) => {
     if (difficulty != 'easy' && difficulty != 'medium' && difficulty != 'hard')
         difficulty = 'easy'
     try {
-
         const text = await getTextByDifficulty(difficulty);
         res.status(200).json({ text });
     } catch (error) {
