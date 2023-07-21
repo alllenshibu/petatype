@@ -33,7 +33,7 @@ export default function Practice() {
         setTextFetched(true);
     };
 
-    const handleGameStart = () => {
+    const handleGameStart = async () => {
         if (gameEnded === false) {
             setActive(true);
         } else if (gameEnded === true) {
@@ -44,7 +44,8 @@ export default function Practice() {
             setAccuracy(0);
             setSpeedTimeGraph([]);
             setAccuracyTimeGraph([]);
-            fetchText();
+            setTextFetched(false);
+            await fetchText();
         }
     }
     useEffect(() => {
