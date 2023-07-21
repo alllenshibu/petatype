@@ -42,7 +42,11 @@ exports.disconnect= async(player_id) =>{
 
     try{
         const res = (await pool
-        .query("DELETE FROM joined WHERE player_id = $1 RETURNING player_id", [player_id])).rows[0].player_id
+        .query("DELETE FROM joined WHERE player_id = $1 RETURNING room_id", [player_id])).rows[0].room_id
+
+        const room_code = (await pool.query("SELECT room_code FROM game_room WHERE room_id = $1", [res])).rows[0].room_code
+
+        return room_code
     }
     catch(err){
         console.log(err)

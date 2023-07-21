@@ -38,8 +38,8 @@ exports.insertConnection = async (player_id , socket_id) =>{  //creates an insta
 exports.disconnectPlayer = async (socket_id) =>{
     try{
        const playerid = (await pool.query("DELETE FROM player_socket WHERE socket_id = $1 RETURNING player_id",[socket_id]).rows[0].player_id)
-            await roomServices.disconnect(playerid.rows[0].player_id)
-         return playerid.rows[0].player_id
+       const room_code = await roomServices.disconnect(playerid.rows[0].player_id)
+         return {room_code:room_code , player_id :playerid}
     }
 
     catch(err){
