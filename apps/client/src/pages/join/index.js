@@ -1,15 +1,22 @@
+import useSocket  from '@/hooks/useSocket';
+import { useRouter } from 'next/router';
 import React, { useState, useEffect } from 'react'
-
-import socket from '@/configs/socketConfig'
 
 export default function join() {
     const [lobbyId, setLobbyId] = useState('')
+    const socket = useSocket();
+    const router = useRouter();
 
     const handlejoinNewLobby = async () => {
-        socket.on('connect', () => {
-            console.log({ playerId: socket.id })
-        })
-        socket.emit('join-lobby', lobbyId)
+        const userId = localStorage.getItem('PetaTypeUiD')
+        if(socket){
+            if(!socket.connected){
+                socket.connect();
+            }
+            router.push("/lobby/" + lobbyId+ "?lobbyName="+"LobbyName to find from db")
+            // socket.emit('join-lobby', { lobbyId: lobbyId, playerId: userId},()=>{
+            // })
+        }
     }
 
 

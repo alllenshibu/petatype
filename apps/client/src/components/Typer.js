@@ -7,6 +7,8 @@ export default function Typer({
     setActive,
     timer,
     setTimer,
+    progress,
+    setProgress,
     wpm,
     setWpm,
     accuracy,
@@ -66,6 +68,7 @@ export default function Typer({
         })
         setWpm(Math.round((completedLetterCount / 5) / (timeElapsed / 60))) // Number of words completed = (Completed letters / 5)           
         setAccuracy(Math.round((correctLetterCount / completedLetterCount) * 100))         // WPM = number of words completed / minutes elapsed
+        setProgress(Math.round((completedLetterCount / text.length) * 100))
 
         let plot = [timeElapsed, wpm];
         setSpeedTimeGraph((prev) => {
@@ -139,7 +142,7 @@ export default function Typer({
             </div>
             <div
                 id="text-display"
-                className={(active) ? "" : "opacity-20 blur-sm"}
+                className={(active) ? "" : "opacity-100 blur-sm"}
             >{textMap.map((word, outerInd) => {
                 return (<span className="indent-3">{word.map((letter, innerInd) => {
                     var colors = "grey";
@@ -163,7 +166,7 @@ export default function Typer({
             <div>
                 <input onBlur={() => {
                     textRef.current.focus();
-                }} autoComplete="off" tabIndex="0" autoFocus="true" id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={(event) => {
+                }} autoComplete="off" tabIndex="0" autoFocus={true} id="user-input" ref={textRef} onKeyDown={handleBackSpace} type="text" placeholder="Start typing..." onChange={(event) => {
                     if (innerIndex != -1 && textRef.current.value.split(' ').slice(-1)[0].length > text.split(' ')[index].length) {
                         textRef.current.value = textRef.current.value.slice(0, textRef.current.value.length - 1);
                     }

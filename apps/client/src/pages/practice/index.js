@@ -7,6 +7,8 @@ export default function Practice() {
     const [active, setActive] = useState(true);
 
     const [timer, setTimer] = useState(30);
+    const [progress,setProgress] = useState(0); 
+
     const [wpm, setWpm] = useState(0);
     const [accuracy, setAccuracy] = useState(0);
 
@@ -37,6 +39,8 @@ export default function Practice() {
             <Typer
                 text={text}
                 active={active}
+                progress={progress}
+                setProgress={setProgress}
                 setActive={setActive}
                 timer={timer}
                 setTimer={setTimer}

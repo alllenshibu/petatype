@@ -1,15 +1,23 @@
-import React, { useState, useEffect } from 'react'
 
-import socket from '@/configs/socketConfig'
+import React, { useState, useEffect } from 'react'
+import { v4 as uuid } from 'uuid';
+import { useRouter } from 'next/router'
+import useSocket from '@/hooks/useSocket';
 
 export default function Create() {
-    const [lobbyId, setLobbyId] = useState('')
+    const [lobbyName, setLobbyName] = useState('')
+    const socket = useSocket();
+    const router = useRouter();
 
     const handleCreateNewLobby = async () => {
-        socket.on('connect', () => {
-            console.log({ playerId: socket.id })
+        const lobbyId = uuid();
+        const userId = localStorage.getItem('PetaTypeUiD')
+        if(!socket.connected){
+            socket.connect();
+        }
+        socket.emit('create-lobby', { lobbyName: lobbyName,lobbyId: lobbyId, playerId: userId},()=>{
+            router.push("/lobby/" + lobbyId+ "?lobbyName="+lobbyName)
         })
-        socket.emit('create-lobby', lobbyId)
     }
 
 
@@ -20,7 +28,7 @@ export default function Create() {
             </div>
             <div className="flex flex-row justify-center items-center gap-4">
                 <input onChange={(e) => {
-                    setLobbyId(e.target.value)
+                    setLobbyName(e.target.value)
                 }} type="text" placeholder="Lobby name" />
                 <button onClick={handleCreateNewLobby}>Create</button>
             </div>
