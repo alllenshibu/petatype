@@ -3,8 +3,11 @@ const {pool} = require('../config');
 
 exports.createRoom = async (player_id ,room_name ,difficulty) =>{
             try{
-                const room_id =await  pool.query("INSERT INTO rooms (host_id, room_name , difficulty) VALUES ($1, $2, $3) RETURNING room_code",
+                const room_id = await  pool.query("INSERT INTO rooms (host_id, room_name , difficulty) VALUES ($1, $2, $3) RETURNING room_code",
                  [player_id, room_name, difficulty]) 
+                 console.log(room_id.rows[0].room_code ,"is the room codeeeeee")
+                await pool.query("INSERT INTO joined (player_id, room_id) VALUES ($1, $2)",
+                    [player_id, room_id.rows[0].room_code])
                 return room_id.rows[0].room_code
             }
             catch(err){
