@@ -183,13 +183,15 @@ export default function Typer({
 
     return (
         <div className="flex flex-col justify-center items-center gap-4">
-            <div className="flex flex-row justify-evenly items-center gap-10">
-                <div className="flex flex-row justify-center items-center gap-10 text-3xl font-mono">
-                    <p>{timer}</p>
-                    <p>{wpm & wpm} WPM</p>
-                    <p>{accuracy & accuracy}%</p>
+            {active && (
+                <div className="flex flex-row justify-evenly items-center gap-10">
+                    <div className="flex flex-row justify-center items-center gap-10 text-3xl font-mono">
+                        <p>{timer}</p>
+                        <p>{wpm & wpm} WPM</p>
+                        <p>{accuracy & accuracy}%</p>
+                    </div>
                 </div>
-            </div>
+            )}
             {!active && !gameEnded && (
                 <div className="absolute text-4xl tracking-widest">Click to start</div>
             )}

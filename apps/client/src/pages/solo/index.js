@@ -82,7 +82,7 @@ export default function Practice() {
     }, [timer])
 
     return (
-       <main
+        <main
             className="h-screen flex flex-col justify-center items-center gap-10"
             onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -111,6 +111,8 @@ export default function Practice() {
                             <div className="flex flex-row justify-center items-center gap-2">
                                 <p>Duration</p>
                                 <input
+                                    type='number'
+                                    min='1'
                                     value={timer}
                                     onChange={(e) => {
                                         setTimer(e.target.value);
