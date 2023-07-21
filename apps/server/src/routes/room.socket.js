@@ -17,7 +17,6 @@ const lobbySocket = (server) => {
         // New Player
         socket.on('new-user', async(playerId) => {
             console.log("New user ID",playerId,socket.id)
-            socket.playerId = playerId;
             await playerServices.insertConnection(playerId,socket.id)
         })
     
@@ -35,7 +34,7 @@ const lobbySocket = (server) => {
         // Create New Lobby
         socket.on('create-lobby',async (data,redirect)=>{
             const {playerId , lobbyName , difficulty} = data
-
+            socket.playerId = playerId;
             const socket_id = socket.id
             const lobbyId = await roomServices.createRoom(playerId,lobbyName ,difficulty)
             //Add lobby to DB (Call controller)
@@ -59,16 +58,14 @@ const lobbySocket = (server) => {
             console.log(clients)
         })
 
-        socket.on('message',()=>{
-            console.log("Disconnecting special msg")
-        })
-
         socket.on('disconnect',async(data)=>{
-            console.log("Disconnecting Player :  " + socket.playerId)
             console.log(socket.id)
-        //    const res = await playerServices.disconnectPlayer(socket.id)
-
-            socket.broadcast.emit('remove-player',socket.id)  //Poor performance need to store socket id and corresponsding room id to remove from that particular room
+            //    const res = await playerServices.disconnectPlayer(socket.id)
+            console.log("Disconnecting Player Outside :  " + socket.playerId)
+            if(socket.playerId){
+                console.log("Disconnecting Inside "  + socket.playerId)
+                socket.broadcast.emit('remove-player',socket.playerId)  //Poor performance need to store socket id and corresponsding room id to remove from that particular room
+            }
         })
     
         // Join Lobby
@@ -82,13 +79,13 @@ const lobbySocket = (server) => {
             socket.join(lobbyId);
             const socketId = socket.id;
             socket.to(lobbyId).emit('add-player',{playerId:playerId,socketId:socketId})
+            socket.playerId = playerId;
             const clients = io.sockets.adapter.rooms.get(lobbyId)
-
 
             console.log("Joined Room");
             console.log("Room members: ")
             console.log(clients)
-            redirect(); //Redirects to lobby page
+            // redirect(); //Redirects to lobby page
         })
     
         socket.on('close', async () => {

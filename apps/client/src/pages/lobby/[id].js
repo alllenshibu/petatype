@@ -79,7 +79,10 @@ export default function Lobby() {
         // Perform localStorage action
         const playerId = localStorage.getItem('PetaTypeUiD');
         setPlayers([{ name: playerId, wpm: 0, accuracy: 0, progress: 0, socketId: "Self" },])
-    }, [])
+        if(socket){
+            socket.emit('join-lobby', { lobbyId: router.query.id, playerId: playerId});
+        }
+    }, [socket])
 
     useEffect(() => {
         const playerId = localStorage.getItem('PetaTypeUiD');
@@ -103,9 +106,9 @@ export default function Lobby() {
                 }
             });
 
-            socket.on('remove-player', (socketId) => {
-                console.log("Removing player with socket id " + socketId);
-                const index = findBySocketId(socketId);
+            socket.on('remove-player', (playerId) => {
+                console.log("Removing player with Player id " + playerId);
+                const index = findPlayerIndex(playerId);
                 console.log("Found at index: " + index)
                 if (index != -1) {
                     players.splice(index, 1);
