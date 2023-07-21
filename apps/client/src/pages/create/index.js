@@ -14,8 +14,8 @@ export default function Create() {
         if(!socket.connected){
             socket.connect();
         }
-        socket.emit('create-lobby', { lobbyName: lobbyName,lobbyId: lobbyId, playerId: userId},({lobbyId})=>{
-            router.push("/lobby/" + lobbyId+ "?lobbyName="+lobbyName)
+        socket.emit('create-lobby', { lobbyName: lobbyName, playerId: userId},(data)=>{
+            router.push("/lobby/" + data.lobbyId + "?lobbyName="+lobbyName)
         })
     }
 
