@@ -5,7 +5,7 @@
 @layer base {
 
     body {
-        @apply bg-neutral-900 text-neutral-100 h-screen  font-mono;
+        @apply bg-neutral-900 text-neutral-100 h-screen overflow-hidden font-mono;
     }
 
     button {
