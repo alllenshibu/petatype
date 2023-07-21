@@ -25,7 +25,7 @@ export default function Home() {
 
   useEffect(() => {
     //If no uid in local storage
-    if (!localStorage.getItem('PetaTypeUiD')) {
+    if (!localStorage.getItem('PetaTypeUiD') || !localStorage.getItem('PetaTypeUName')) {
       setNewUser(true)
     } else {
       setNewUser(false)
