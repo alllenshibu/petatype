@@ -38,9 +38,8 @@ exports.joinRoom = async (player_id , room_id) =>{
 exports.disconnect= async(player_id) =>{
 
     try{
-        await pool
-        .query("DELETE FROM joined WHERE player_id = $1", [player_id])
-
+        const res = (await pool
+        .query("DELETE FROM joined WHERE player_id = $1 RETURNING player_id", [player_id])).rows[0].player_id
     }
     catch(err){
         console.log(err)
@@ -104,7 +103,7 @@ exports.openRoom = async (room_id) =>{
 exports.getRoomDetails = async (room_id) =>{
     try{
         const res = await pool
-        .query("SELECT player_id , player_name FROM rooms, WHERE room_id = $1", [room_id])
+        .query("SELECT player_id , player_name FROM rooms, player WHERE room_id = $1", [room_id])
         return res.rows
     }
 

@@ -13,7 +13,7 @@ exports.getTextByDifficulty = async (difficulty) => {
     try {
         const selectedData = await new Promise((resolve, reject) => {
             const rows = [];
-            fs  .createReadStream(
+            fs.createReadStream(
                 difficulty === 'easy' ? EASY : difficulty === 'medium' ? MEDIUM : HARD
             )
                 .pipe(csvParser({ headers: true }))
