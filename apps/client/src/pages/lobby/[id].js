@@ -32,13 +32,13 @@ export default function Lobby() {
     const [accuracyTimeGraph, setAccuracyTimeGraph] = useState([]);
     const router = useRouter()
 
-    // const fetchText = async () => {
-    //     const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/text`);
-    //     setText(res.data.text);
-    //     // setText(t);
-    //     console.log(res.data.text);
-    //     setTextFetched(true);
-    // };
+    const fetchText = async () => {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/text`);
+        setText(res.data.text);
+        // setText(t);
+        console.log(res.data.text);
+        setTextFetched(true);
+    };
 
     const handleGameStart = () => {
         if (gameEnded === false) {
@@ -62,14 +62,14 @@ export default function Lobby() {
     const findPlayerIndex = (playerId) => {
         console.log("INDEX OF SEARCH FOR ADD " + playerId);
         console.log(players);
-        return(players.findIndex((player) => {
+        return (players.findIndex((player) => {
             return player.playerId === playerId
         }))
     }
 
-    const findBySocketId= (SocketID) => {
+    const findBySocketId = (SocketID) => {
         console.log(players);
-        return(players.findIndex((player) => {
+        return (players.findIndex((player) => {
             return player.socketId === SocketID
         }))
     }
@@ -79,8 +79,8 @@ export default function Lobby() {
         // Perform localStorage action
         const playerId = localStorage.getItem('PetaTypeUiD');
         setPlayers([{ name: playerId, wpm: 0, accuracy: 0, progress: 0, socketId: "Self" },])
-        if(socket){
-            socket.emit('join-lobby', { lobbyId: router.query.id, playerId: playerId});
+        if (socket) {
+            socket.emit('join-lobby', { lobbyId: router.query.id, playerId: playerId });
         }
     }, [socket])
 
@@ -100,7 +100,7 @@ export default function Lobby() {
                         return [...prev, { name: data.playerId, playerId: data.playerId, wpm: 0, accuracy: 0, progress: 0, socketId: data.socketId }]
                     })
                 }
-                else{
+                else {
                     players[index].socketId = data.socketId;
                     setPlayers([...players])
                 }
@@ -116,7 +116,7 @@ export default function Lobby() {
                 }
             });
 
-            updateLobby({lobbyId:router.query.id,playerId:localStorage.getItem('PetaTypeUiD')});
+            updateLobby({ lobbyId: router.query.id, playerId: localStorage.getItem('PetaTypeUiD') });
 
             socket.on('disconnect', () => {
                 socket.emit('message', "Disconnecting");
@@ -136,10 +136,14 @@ export default function Lobby() {
         }
     }, [socket, players])
 
-    const emit = () => {
-        if (socket.disconnected) socket.connect();
-        socket.emit('messages', { message: "Hello" })
-    }
+    useEffect(() => {
+        fetchText();
+    }, []);
+
+    // const emit = () => {
+    //     if (socket.disconnected) socket.connect();
+    //     socket.emit('messages', { message: "Hello" })
+    // }
 
     return (
         <>
@@ -152,10 +156,10 @@ export default function Lobby() {
                 className="h-screen flex flex-col justify-center items-center gap-10">
                 <div className='text-center'>
                     <p className="text-4xl font-mono">We at lobby {router.query.lobbyName}</p>
-                    <button onClick={emit}>EMIT</button>
-                    <p className="text-xl font-mono flex items-center gap-2 hover:cursor-pointer" onClick={() => {
+                    {/* <button onClick={emit}>EMIT</button> */}
+                    <div className="text-xl font-mono flex items-center gap-2 hover:cursor-pointer" onClick={() => {
                         navigator.clipboard.writeText(router.query.id)
-                    }}>Room id:  {router.query.id} <div className='text-sm'>(click to copy)</div></p>
+                    }}>Room id:  {router.query.id} <div className='text-sm'>(click to copy)</div></div>
                 </div>
                 <div className='w-1/3'>
                     {
@@ -212,32 +216,49 @@ export default function Lobby() {
                     <div className="absolute text-4xl tracking-widest">Loading...</div>
                 )}
                 {textFetched === true && (
-                    <div
-                        onClick={(e) => {
-                            e.preventDefault();
-                            handleGameStart();
-                        }}
-                    >
-                        <Typer
-                            text={text}
-                            progress={progress}
-                            setProgress={setProgress}
-                            timer={timer}
-                            setTimer={setTimer}
-                            active={active}
-                            setActive={setActive}
-                            gameEnded={gameEnded}
-                            setGameEnded={setGameEnded}
-                            wpm={wpm}
-                            setWpm={setWpm}
-                            accuracy={accuracy}
-                            setAccuracy={setAccuracy}
-                            speedTimeGraph={speedTimeGraph}
-                            setSpeedTimeGraph={setSpeedTimeGraph}
-                            accuracyTimeGraph={accuracyTimeGraph}
-                            setAccuracyTimeGraph={setAccuracyTimeGraph} />
+                    <>
+                        {!active &&
+                            <div className="flex flex-row justify-center items-center gap-10">
+                                <p>Mode</p>
+                                <select onChange={(e) => {
+                                    setDifficulty(e.target.value);
+                                    fetchText();
+                                }}>
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                            </div>
+                        }
 
-                    </div>
+                        <div
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleGameStart();
+                            }}
+                        >
+                            <Typer
+                                text={text}
+                                active={active}
+                                setActive={setActive}
+                                gameEnded={gameEnded}
+                                setGameEnded={setGameEnded}
+                                timer={timer}
+                                setTimer={setTimer}
+                                progress={progress}
+                                setProgress={setProgress}
+                                wpm={wpm}
+                                setWpm={setWpm}
+                                accuracy={accuracy}
+                                setAccuracy={setAccuracy}
+                                speedTimeGraph={speedTimeGraph}
+                                setSpeedTimeGraph={setSpeedTimeGraph}
+                                accuracyTimeGraph={accuracyTimeGraph}
+                                setAccuracyTimeGraph={setAccuracyTimeGraph}
+                            />
+                        </div>
+                    </>
+
                 )}
             </main>
         </>
