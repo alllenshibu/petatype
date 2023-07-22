@@ -1,12 +1,16 @@
 # PetaByte - Speed Typing
+![Alt text](image.png)
 
 PetaByte is a web application that lets users test their typing speed and accuracy in a fun and competitive environment. It offers two exciting modes: Solo Mode for individual practice and Multi Mode for players to compete against each other. The app is built using Next.js, Supabase, Socket.io, and Redis to ensure a seamless and real-time experience for all users.
 
 # Features
 
 - Solo Mode: Practice typing with random texts and get instant feedback on your accuracy and words per minute (WPM).
+![Alt text](image-1.png)
 - Multi Mode: Compete against other players in real-time and view each player's progress during the typing challenge.
 - Leaderboard: Keep track of the top performers in the Multi Mode and strive to climb up the ranks.
+![Alt text](image-2.png)
+![Alt text](image-3.png)
 - Diverse Texts: PetaByte offers a wide range of texts from various genres to keep the typing experience engaging and interesting.
 - User Authentication: Users can create accounts and log in to save their progress and compare their statistics with others.
 
