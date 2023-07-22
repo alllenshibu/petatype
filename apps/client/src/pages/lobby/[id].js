@@ -8,9 +8,6 @@ import { get, set } from 'mongoose';
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
 
-const t = "If you're visiting this page, you're likely here because you're searching for a random sentence. Sometimes a random word just isn't enough, and that is where the random sentence generator comes into play. By inputting the desired number, you can make a list of as many random sentences as you want or need. Producing random sentences can be helpful in a number of different ways.";
-
-
 export default function Lobby() {
     const searchParams = useSearchParams()
     const [text, setText] = useState("");
@@ -115,15 +112,6 @@ export default function Lobby() {
     // }
 
     useEffect(() => {
-        const guest = searchParams.get("lobbyName")
-        console.log(guest);
-        // if(router.query.lobbyName === `${lobbyId}?guest=true`){
-        //     console.log("GUEST MODE")
-        // }
-        // else{
-            
-        //     console.log("NOT GUEST MODE: " + guest)
-        // }
         setIsGuest(router.query.guest === "true")
         const playerId = localStorage.getItem('PetaTypeUiD');
         const playerName = localStorage.getItem('PetaTypeUName');

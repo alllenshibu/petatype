@@ -23,17 +23,16 @@ export default function Typer({
 
     const textRef = useRef(null);
     const [textMap, settextMap] = useState([]);
-    const [toType, setToType] = useState(text.split(' ')) //array of words to type
     const [index, setIndex] = useState(0);
     const [innerIndex, setinnerIndex] = useState(-1);
     const [previiousWpm, setPreviousWpm] = useState(0);
     const [previousAccuracy, setPreviousAccuracy] = useState(0);
 
     const initTextMap = () => {
-        setToType(text.split(' '));
+        console.log("Setting new text" + text);
         //Create map with letters and color
         // console.log(text)
-        const map = toType.map((word) => {
+        const map = text.split(' ').map((word) => {
             return word.split('').map((letter) => {
                 return { letter: letter, status: -1 };
             })
@@ -134,12 +133,12 @@ export default function Typer({
 
     useEffect(() => {
         initTextMap()
-    }, [])
-
-    // Bug
-    useEffect(() => {
-        setToType(text.split(' '));
     }, [text])
+
+    // // Bug
+    // useEffect(() => {
+    //     setToType(text.split(' '));
+    // }, [text])
 
     //to compare text with typed text
     useEffect(() => {
