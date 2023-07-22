@@ -73,9 +73,9 @@ const lobbySocket = (server) => {
             
         })
 
-        socket.on('add-players',async({playerId,lobbyId,socketId})=>{
+        socket.on('add-players',async({playerId,lobbyId,socketId,playerName})=>{
             console.log("Oldplayer added to new joinee")
-            socket.to(lobbyId).emit('add-player',{playerId:playerId,socketId:socketId})
+            socket.to(lobbyId).emit('add-player',{playerId:playerId,socketId:socketId,playerName:playerName})
         })
 
         socket.on('get-players',async(data,fn)=>{
@@ -115,7 +115,7 @@ const lobbySocket = (server) => {
     
         // Join Lobby
         socket.on('join-lobby', async(data,redirect) => {
-            const {playerId ,lobbyId} = data
+            const {playerId ,lobbyId,playerName} = data
 
 
             await roomServices.joinRoom(playerId,lobbyId)
@@ -123,7 +123,7 @@ const lobbySocket = (server) => {
 
             socket.join(lobbyId);
             const socketId = socket.id;
-            socket.to(lobbyId).emit('add-player',{playerId:playerId,socketId:socketId})
+            socket.to(lobbyId).emit('add-player',{playerId:playerId,socketId:socketId,playerName:playerName})
             const clients = io.sockets.adapter.rooms.get(lobbyId)
 
             console.log("Joined Room");

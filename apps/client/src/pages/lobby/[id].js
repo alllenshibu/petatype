@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import Typer from '@/components/Typer'
 import useSocket from '@/hooks/useSocket';
+import { useSearchParams } from 'next/navigation'
 import LobbyWaitingModal from '@/modals/LobbyWaitingModal';
 import { get, set } from 'mongoose';
 import { useRouter } from 'next/router'
@@ -11,7 +12,7 @@ const t = "If you're visiting this page, you're likely here because you're searc
 
 
 export default function Lobby() {
-
+    const searchParams = useSearchParams()
     const [text, setText] = useState("");
     const [textFetched, setTextFetched] = useState(false);
     const [difficulty, setDifficulty] = useState("easy");
@@ -28,12 +29,16 @@ export default function Lobby() {
     const socket = useSocket();
     const [Lobbyplayers, setLobbyPlayers] = useState([]);
     const [start,setStart] = useState(false);
+    const [isGuest,setIsGuest] = useState(false);
 
     const [speedTimeGraph, setSpeedTimeGraph] = useState([]);
     const [accuracyTimeGraph, setAccuracyTimeGraph] = useState([]);
     const router = useRouter()
 
     const fetchText = async () => {
+        if(isGuest){
+            return;
+        }
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/text`);
         setText(res.data.text);
         // setText(t);
@@ -110,9 +115,20 @@ export default function Lobby() {
     // }
 
     useEffect(() => {
+        const guest = searchParams.get("lobbyName")
+        console.log(guest);
+        if(router.query.lobbyName === `${lobbyId}?guest=true`){
+            console.log("GUEST MODE")
+        }
+        else{
+            
+            console.log("NOT GUEST MODE: " + guest)
+        }
+        setIsGuest(router.query.guest === "true")
         const playerId = localStorage.getItem('PetaTypeUiD');
-        console.log("Adding self to lobby");
-        Lobbyplayers.push({ name: playerId, playerId:playerId, wpm: 0, accuracy: 0, progress: 0, socketId: "Self" })
+        const playerName = localStorage.getItem('PetaTypeUName');
+        console.log("Adding self to lobby" + playerName);
+        Lobbyplayers.push({ name: playerName, playerId:playerId, wpm: 0, accuracy: 0, progress: 0, socketId: "Self" })
         setLobbyPlayers([...Lobbyplayers])
     },[])
 
@@ -120,8 +136,9 @@ export default function Lobby() {
         // fetchText();
         // Perform localStorage action
         const playerId = localStorage.getItem('PetaTypeUiD');
+        const playerName = localStorage.getItem('PetaTypeUName');
         if (socket) {
-            socket.emit('join-lobby', { lobbyId: router.query.id, playerId: playerId });
+            socket.emit('join-lobby', { lobbyId: router.query.id, playerId: playerId, playerName: playerName });
         }
     }, [socket])
 
@@ -153,13 +170,14 @@ export default function Lobby() {
 
                 const index = findPlayerIndex(data.playerId);
                 const uid = localStorage.getItem('PetaTypeUiD')
+                const playerName = localStorage.getItem('PetaTypeUName');
                 console.log("Adding player with socket id " + data.socketId + " at index " + index)
                 if (index == -1) {
                     setLobbyPlayers((prev) => {
-                        return [...prev, { name: data.playerId, playerId: data.playerId, wpm: 0, accuracy: 0, progress: 0, socketId: data.socketId }]
+                        return [...prev, { name: data.playerName, playerId: data.playerId, wpm: 0, accuracy: 0, progress: 0, socketId: data.socketId }]
                     })
                     if(data.playerId != uid ){
-                        socket.emit('add-players',{playerId: uid,lobbyId:data.socketId,socketId: socket.id})
+                        socket.emit('add-players',{playerName:playerName,playerId: uid,lobbyId:data.socketId,socketId: socket.id})
                     }
                 }
                 else {
@@ -177,7 +195,7 @@ export default function Lobby() {
             socket.on('start-game', (data) => {
                 console.log("Starting my game")
                 handleGameStart();
-
+                console.log("FETCHED FROM HOST" + data.text);
                 setText(data.text);
                 setTextFetched(true);
             })
@@ -279,7 +297,7 @@ export default function Lobby() {
                         Lobbyplayers.map((player) => {
                             return (
                                 <div>
-                                    <p>{player.socketId}  {player.playerId}</p>
+                                    <p>{player.name}</p>
                                     <div className='flex flex-row h-2 relative outline rounded-md animate-pulse'>
                                         <div className='h-2 absolute bg-green-500 rounded-md  ' style={{ width: player.progress + "%" }}></div>
                                     </div>
