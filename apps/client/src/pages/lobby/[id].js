@@ -27,7 +27,7 @@ export default function Lobby() {
     const [progress, setProgress] = useState(0);
     const socket = useSocket();
     const [Lobbyplayers, setLobbyPlayers] = useState([]);
-
+    const [start,setStart] = useState(false);
 
     const [speedTimeGraph, setSpeedTimeGraph] = useState([]);
     const [accuracyTimeGraph, setAccuracyTimeGraph] = useState([]);
@@ -43,18 +43,10 @@ export default function Lobby() {
 
     const handleGameStart = async () => {
         if (gameEnded === false) {
-            let countdownInterval;
-            countdownInterval = setInterval(() => {
-                setCountdown((prev) => prev - 1);
-
-                if(countdown === 0){
-                    clearInterval(countdownInterval);
-                }
-            }, 1000);
-
-            return () => clearInterval(countdownInterval);
+            setStart(true)
         } else if (gameEnded === true) {
             console.log("ENDED Players")
+            setStart(false)
             console.log(Lobbyplayers);
             setGameEnded(false);
             setTimer(30);
@@ -67,6 +59,24 @@ export default function Lobby() {
             setCountdown(5);
         }
     }
+
+    useEffect(()=>{
+        if(socket && start === true){
+            socket.emit('start-lobby', { lobbyId: router.query.id, text: text });
+        }
+
+        if(start === true){
+            let countdownInterval;
+            countdownInterval = setInterval(() => {
+                    setCountdown((prev) => prev - 1);
+                    
+                    if(countdown === 0){
+                        clearInterval(countdownInterval);
+                    }
+            }, 1000);
+            return () => clearInterval(countdownInterval);
+        }
+    },[start,socket])
 
     const updateLobby = (data) => {
         if(socket){
@@ -121,11 +131,6 @@ export default function Lobby() {
             socket.on('connect', () => {
                 console.log("Socket Connected , Registering Listeners, Socket ID: " + socket.id)
             })
-
-            socket.on('start-game', () => {
-                handleGameStart();
-            })
-
             updateLobby({ lobbyId: router.query.id, playerId: localStorage.getItem('PetaTypeUiD') });
 
             socket.on('disconnect', () => {
@@ -147,22 +152,35 @@ export default function Lobby() {
                 // getPlayers();
 
                 const index = findPlayerIndex(data.playerId);
+                const uid = localStorage.getItem('PetaTypeUiD')
                 console.log("Adding player with socket id " + data.socketId + " at index " + index)
                 if (index == -1) {
                     setLobbyPlayers((prev) => {
                         return [...prev, { name: data.playerId, playerId: data.playerId, wpm: 0, accuracy: 0, progress: 0, socketId: data.socketId }]
                     })
+                    if(data.playerId != uid ){
+                        socket.emit('add-players',{playerId: uid,lobbyId:data.socketId,socketId: socket.id})
+                    }
                 }
                 else {
                     console.log("Updating socket id of player " + data.playerId + " to " + data.socketId)
                     Lobbyplayers[index].socketId = data.socketId;
                     setLobbyPlayers([...Lobbyplayers])
+                    if(data.playerId != uid && data.socketId != Lobbyplayers[index].socketId){
+                        socket.emit('add-players',{playerId: uid,lobbyId:data.socketId,socketId: socket.id})
+                    }
                 }
-                const uid = localStorage.getItem('PetaTypeUiD')
-                if(data.playerId != uid){
-                    socket.emit('add-player',{playerId: uid,lobbyId:data.socketId,socketId: socket.id})
-                }
+
+
             });
+
+            socket.on('start-game', (data) => {
+                console.log("Starting my game")
+                handleGameStart();
+
+                setText(data.text);
+                setTextFetched(true);
+            })
 
             socket.on('remove-player', ({socketId}) => {
                 // getPlayers();
@@ -215,7 +233,7 @@ export default function Lobby() {
     },[progress])
 
     useEffect(() => {
-        if (countdown === 0) {
+        if (countdown === 0 && socket) {
             setActive(true);
         }
     }, [countdown])
@@ -335,7 +353,7 @@ export default function Lobby() {
                         </div>
                         <div>
                             {gameEnded &&
-                                players.map((player) => {
+                                Lobbyplayers.map((player) => {
                                     return (
                                         <div className='flex flex-row justify-center items-center gap-4 text-xl'>
                                             <p>{player.name}</p>
