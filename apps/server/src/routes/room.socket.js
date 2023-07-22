@@ -1,12 +1,14 @@
 const { createRoom } = require('../controllers/room.controller');
 
+require('dotenv').config();
+
 const roomServices = require('../services/room.services');
 const playerServices = require('../services/player.services');
 
 const lobbySocket = (server) => {
     const io = require('socket.io')(server, {
         cors: {
-            origin: "http://localhost:3000",
+            origin: process.env.CLIENT_URL,
         }
       });
 
