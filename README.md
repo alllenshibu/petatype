@@ -53,7 +53,7 @@ To run PetaByte on your local machine, follow these steps:
 ## Known Issues
 
 - Synchronization issues in Multi Mode: Starting the game works fine most of the time. Restarting doesn't work most of the time.
-- Text synchronization issues in Multi Mode: The text is not synchronized properly between players.
+- Text synchronization issues in Multi Mode: The text is not synchronized properly between players. If you allow the first match to finish (30sec) without pressing any key and start the next match to start, the text gets synchronized properly.
 
 Enjoy testing your typing skills and having a great time competing with others.
 
