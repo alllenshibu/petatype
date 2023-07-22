@@ -1,5 +1,7 @@
 const { createRoom } = require('../controllers/room.controller');
 
+const {redis} = require('../config');
+
 require('dotenv').config();
 
 const roomServices = require('../services/room.services');

@@ -1,81 +1,56 @@
-# Turborepo starter
+# PetaByte - Speed Typing
 
-This is an official starter Turborepo.
+PetaByte is a web application that lets users test their typing speed and accuracy in a fun and competitive environment. It offers two exciting modes: Solo Mode for individual practice and Multi Mode for players to compete against each other. The app is built using Next.js, Supabase, Socket.io, and Redis to ensure a seamless and real-time experience for all users.
 
-## Using this example
+# Features
 
-Run the following command:
+- Solo Mode: Practice typing with random texts and get instant feedback on your accuracy and words per minute (WPM).
+- Multi Mode: Compete against other players in real-time and view each player's progress during the typing challenge.
+- Leaderboard: Keep track of the top performers in the Multi Mode and strive to climb up the ranks.
+- Diverse Texts: PetaByte offers a wide range of texts from various genres to keep the typing experience engaging and interesting.
+- User Authentication: Users can create accounts and log in to save their progress and compare their statistics with others.
 
-```sh
-npx create-turbo@latest
-```
+## Technologies Used
 
-## What's inside?
+- Next.js: A React framework that enables server-side rendering, making the application fast and SEO-friendly.
+- Supabase: An open-source Firebase alternative that provides authentication, database, and storage services.
+- Socket.io: A library for real-time, bidirectional communication between the server and clients, essential for Multi Mode functionality.
+- Redis: An in-memory data structure store used for caching and managing real-time data in Multi Mode.
 
-This Turborepo includes the following packages/apps:
+## Installation and Setup
 
-### Apps and Packages
+To run PetaByte on your local machine, follow these steps:
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `ui`: a stub React component library shared by both `web` and `docs` applications
-- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
+1. Clone the repository from GitHub:
+   <code>
+   git clone https://github.com/your-username/petabyte.git <br />
+   cd petabyte
+   </code>
+1. Install dependencies:
+   <code>
+   npm install
+   </code>
+1. Configure Supabase:
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+   1. Create a Supabase project and obtain your API keys.
+   1. Set up the necessary tables and columns for user data and typing challenge records.
 
-### Utilities
+1. Configure Redis:
 
-This Turborepo has some additional tools already setup for you:
+   1. Install Redis on your machine.
+   1. Update the Redis connection settings in the application.
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+1. Run the application:
+   <code>
+   npm run dev
+   </code>
+1. Open your browser and access the application at http://localhost:3000.
 
-### Build
+## Known Issues
 
-To build all apps and packages, run the following command:
+- Synchronization issues in Multi Mode: Starting the game works fine most of the time. Restarting doesn't work most of the time.
+- Text synchronization issues in Multi Mode: The text is not synchronized properly between players.
 
-```
-cd my-turborepo
-pnpm build
-```
+Enjoy testing your typing skills and having a great time competing with others.
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+Happy typing! 🚀
