@@ -3,7 +3,7 @@ import axios from 'axios';
 import Typer from '@/components/Typer'
 import useSocket from '@/hooks/useSocket';
 import LobbyWaitingModal from '@/modals/LobbyWaitingModal';
-import { set } from 'mongoose';
+import { get, set } from 'mongoose';
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
 
@@ -26,7 +26,7 @@ export default function Lobby() {
     const [accuracy, setAccuracy] = useState(0);
     const [progress, setProgress] = useState(0);
     const socket = useSocket();
-    const [players, setPlayers] = useState([]);
+    const [Lobbyplayers, setLobbyPlayers] = useState([]);
 
 
     const [speedTimeGraph, setSpeedTimeGraph] = useState([]);
@@ -44,14 +44,18 @@ export default function Lobby() {
     const handleGameStart = async () => {
         if (gameEnded === false) {
             let countdownInterval;
-
             countdownInterval = setInterval(() => {
                 setCountdown((prev) => prev - 1);
+
+                if(countdown === 0){
+                    clearInterval(countdownInterval);
+                }
             }, 1000);
 
             return () => clearInterval(countdownInterval);
         } else if (gameEnded === true) {
-
+            console.log("ENDED Players")
+            console.log(Lobbyplayers);
             setGameEnded(false);
             setTimer(30);
             setWpm(0);
@@ -65,29 +69,47 @@ export default function Lobby() {
     }
 
     const updateLobby = (data) => {
-        socket.emit('update-lobby', data)
+        if(socket){
+            socket.emit('update-lobby', data)
+        }
     }
 
     const findPlayerIndex = (playerId) => {
-        console.log("INDEX OF SEARCH FOR ADD " + playerId);
-        console.log(players);
-        return (players.findIndex((player) => {
+        console.log("Players")
+        console.log(Lobbyplayers)
+        return (Lobbyplayers.findIndex((player) => {
             return player.playerId === playerId
         }))
     }
 
     const findBySocketId = (SocketID) => {
-        console.log(players);
+        console.log(Lobbyplayers);
         return (players.findIndex((player) => {
             return player.socketId === SocketID
         }))
     }
 
+    // const getPlayers = () => {
+    //     if(socket){
+    //         socket.emit('get-players', { lobbyId: router.query.id},(Newplayers)=>{
+    //             console.log("Players are : ")
+    //             console.log(Newplayers)
+    //             setPlayers([...Newplayers])
+    //         });
+         // }
+    // }
+
+    useEffect(() => {
+        const playerId = localStorage.getItem('PetaTypeUiD');
+        console.log("Adding self to lobby");
+        Lobbyplayers.push({ name: playerId, playerId:playerId, wpm: 0, accuracy: 0, progress: 0, socketId: "Self" })
+        setLobbyPlayers([...Lobbyplayers])
+    },[])
+
     useEffect(() => {
         // fetchText();
         // Perform localStorage action
         const playerId = localStorage.getItem('PetaTypeUiD');
-        setPlayers([{ name: playerId, wpm: 0, accuracy: 0, progress: 0, socketId: "Self" },])
         if (socket) {
             socket.emit('join-lobby', { lobbyId: router.query.id, playerId: playerId });
         }
@@ -100,35 +122,13 @@ export default function Lobby() {
                 console.log("Socket Connected , Registering Listeners, Socket ID: " + socket.id)
             })
 
-            if (socket.disconnected) socket.connect();
-            socket.on('add-player', (data) => {
-                const index = findPlayerIndex(data.playerId);
-                console.log("Adding player with socket id " + data.socketId + " at index " + index)
-                if (index == -1) {
-                    setPlayers((prev) => {
-                        return [...prev, { name: data.playerId, playerId: data.playerId, wpm: 0, accuracy: 0, progress: 0, socketId: data.socketId }]
-                    })
-                }
-                else {
-                    players[index].socketId = data.socketId;
-                    setPlayers([...players])
-                }
-            });
-
-            socket.on('remove-player', (socketId) => {
-                console.log("Removing player with Socket id " + socketId);
-                const index = findBySocketId(socketId);
-                console.log("Found at index: " + index)
-                if (index != -1) {
-                    players.splice(index, 1);
-                    setPlayers([...players])
-                }
-            });
+            socket.on('start-game', () => {
+                handleGameStart();
+            })
 
             updateLobby({ lobbyId: router.query.id, playerId: localStorage.getItem('PetaTypeUiD') });
 
             socket.on('disconnect', () => {
-                socket.emit('message', "Disconnecting");
                 console.log("Disconnected socket " + socket?.id);
             })
         }
@@ -136,20 +136,96 @@ export default function Lobby() {
 
         return () => {
             socket?.removeAllListeners();
-            socket?.close();
-            // socket?.off('connect')
-            // socket?.off('message')
-            // socket?.off('disconnect')
-            // socket?.off('connect_error')
-            // socket?.off('add_player')
         }
-    }, [socket, players])
+    }, [socket])
+
+    useEffect(()=>{
+        if(socket){
+            if (socket.disconnected) socket.connect();
+            socket.on('add-player', (data) => {
+
+                // getPlayers();
+
+                const index = findPlayerIndex(data.playerId);
+                console.log("Adding player with socket id " + data.socketId + " at index " + index)
+                if (index == -1) {
+                    setLobbyPlayers((prev) => {
+                        return [...prev, { name: data.playerId, playerId: data.playerId, wpm: 0, accuracy: 0, progress: 0, socketId: data.socketId }]
+                    })
+                }
+                else {
+                    console.log("Updating socket id of player " + data.playerId + " to " + data.socketId)
+                    Lobbyplayers[index].socketId = data.socketId;
+                    setLobbyPlayers([...Lobbyplayers])
+                }
+                const uid = localStorage.getItem('PetaTypeUiD')
+                if(data.playerId != uid){
+                    socket.emit('add-player',{playerId: uid,lobbyId:data.socketId,socketId: socket.id})
+                }
+            });
+
+            socket.on('remove-player', ({socketId}) => {
+                // getPlayers();
+                if(socketId === undefined){
+                    return;
+                }
+                console.log("Removing player with Socket id " + socketId);
+                const index = findBySocketId(socketId);
+                console.log("Found at index: " + index)
+                if (index != -1) {
+                    Lobbyplayers.splice(index, 1);
+                    setLobbyPlayers([...Lobbyplayers])
+                }
+            });
+
+            socket.on('update-players',(data)=>{
+                console.log("Updating players")
+                console.log(data)
+                const index = findPlayerIndex(data.playerId);
+                console.log("Found at index: " + index)
+                if (index != -1) {
+                    setLobbyPlayers((prev) => {
+                        prev[index].wpm = data.wpm;
+                        prev[index].accuracy = data.accuracy;
+                        prev[index].progress = data.progress;
+                        return [...prev]
+                    })
+                    console.log("Changed PLAYERS")
+                    console.log(Lobbyplayers)
+                }
+            })
+        }
+
+
+        return () => {
+            socket?.removeAllListeners();
+        }
+    },[socket,Lobbyplayers])
+
+
+    useEffect(() => {
+        if(Lobbyplayers.length > 0){
+            const playerId = localStorage.getItem('PetaTypeUiD');
+            const index = findPlayerIndex(playerId);
+            setLobbyPlayers((prev) => {
+                prev[index].progress = progress;
+                return [...prev]
+            })
+        }
+    },[progress])
 
     useEffect(() => {
         if (countdown === 0) {
             setActive(true);
         }
     }, [countdown])
+
+    useEffect(()=>{
+            if(socket){
+                const userId = localStorage.getItem('PetaTypeUiD')
+                updateLobby({ lobbyId: router.query.id,playerData: {playerId: userId,wpm: wpm, accuracy: accuracy, progress: progress, socketId: "Self" }})
+            }
+    },[timer])
 
     useEffect(() => {
         fetchText();
@@ -182,10 +258,10 @@ export default function Lobby() {
                 </div>
                 <div className='w-1/3'>
                     {
-                        players.map((player) => {
+                        Lobbyplayers.map((player) => {
                             return (
                                 <div>
-                                    <p>{player.socketId}</p>
+                                    <p>{player.socketId}  {player.playerId}</p>
                                     <div className='flex flex-row h-2 relative outline rounded-md animate-pulse'>
                                         <div className='h-2 absolute bg-green-500 rounded-md  ' style={{ width: player.progress + "%" }}></div>
                                     </div>

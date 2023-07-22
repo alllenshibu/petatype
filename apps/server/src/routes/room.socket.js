@@ -17,6 +17,7 @@ const lobbySocket = (server) => {
         // New Player
         socket.on('new-user', async(playerId) => {
             console.log("New user ID",playerId,socket.id)
+            socket.playerId = playerId;
             await playerServices.insertConnection(playerId,socket.id)
         })
     
@@ -34,7 +35,6 @@ const lobbySocket = (server) => {
         // Create New Lobby
         socket.on('create-lobby',async (data,redirect)=>{
             const {playerId , lobbyName , difficulty} = data
-            socket.playerId = playerId;
             const socket_id = socket.id
             const lobbyId = await roomServices.createRoom(playerId,lobbyName ,difficulty)
             //Add lobby to DB (Call controller)
@@ -48,20 +48,56 @@ const lobbySocket = (server) => {
             redirect({lobbyId}); //Redirects to lobby page
         })
 
+        socket.on('start-lobby',({lobbyId})=>{
+            socket.to(lobbyId).emit('start-game')
+        })
+
         socket.on('update-lobby',async(data)=>{
             const {lobbyId,playerId,playerData} = data
-            console.log("Updating lobby")
 
-            socket.join(lobbyId);
+            if(playerData){
+                // console.log(playerData);
+                socket.broadcast.to(lobbyId).emit('update-players',playerData)
+            }
+            else{
+                socket.join(lobbyId);
+            }
 
             const clients = io.sockets.adapter.rooms.get(lobbyId)
-
-            socket.to(lobbyId).emit('update-players',playerData)
-            console.log(clients)
+            // console.log(clients)
         })
 
         socket.on('end-game',async(data)=>{
             
+        })
+
+        socket.on('add-player',async({playerId,lobbyId,socketId})=>{
+            console.log("Oldplayer added to new joinee")
+            socket.to(lobbyId).emit('add-player',{playerId:playerId,socketId:socketId})
+        })
+
+        socket.on('get-players',async(data,fn)=>{
+            console.log("new players get player")
+            const {lobbyId} = data
+            const clients = io.sockets.adapter.rooms.get(lobbyId)
+            const numClients = clients ? clients.size : 0;
+            console.log("Player IDs of lobby")
+            const players = []
+            if(!clients){
+                console.log("No clients")
+                return;
+            }
+            for (const clientId of clients ) {
+                const clientSocket = io.sockets.sockets.get(clientId);
+                try{
+                    players.push({name: clientSocket.playerId,playerId:clientSocket.playerId, wpm: 0, accuracy: 0, progress: 0, socketId: clientSocket.id })
+                }
+                catch(e){
+                    console.log(e)
+                }
+           }
+            console.log(players)
+            fn(players)
         })
 
         socket.on('disconnecting',async(data)=>{
@@ -69,7 +105,7 @@ const lobbySocket = (server) => {
                const res = await playerServices.disconnectPlayer(socket.id)
             console.log("Disconnecting Player Outside :  " + socket.playerId + " Socket ID is " + socket.id + " Res is :")
             console.log(res);
-            if(socket.id){
+            if(socket.id !== undefined && socket.id !== null){
                 console.log("Disconnecting Inside "  + socket.playerId)
                 socket.broadcast.emit('remove-player',socket.id)  //Poor performance need to store socket id and corresponsding room id to remove from that particular room
             }
@@ -86,7 +122,6 @@ const lobbySocket = (server) => {
             socket.join(lobbyId);
             const socketId = socket.id;
             socket.to(lobbyId).emit('add-player',{playerId:playerId,socketId:socketId})
-            socket.playerId = playerId;
             const clients = io.sockets.adapter.rooms.get(lobbyId)
 
             console.log("Joined Room");
@@ -94,6 +129,8 @@ const lobbySocket = (server) => {
             console.log(clients)
             // redirect(); //Redirects to lobby page
         })
+
+
     
         socket.on('close', async () => {
             console.log('user disconnected');
