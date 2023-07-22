@@ -50,8 +50,8 @@ const lobbySocket = (server) => {
             redirect({lobbyId}); //Redirects to lobby page
         })
 
-        socket.on('start-lobby',({lobbyId})=>{
-            socket.to(lobbyId).emit('start-game')
+        socket.on('start-lobby',({lobbyId,text})=>{
+            socket.broadcast.to(lobbyId).emit('start-game',{text:text})
         })
 
         socket.on('update-lobby',async(data)=>{
@@ -73,7 +73,7 @@ const lobbySocket = (server) => {
             
         })
 
-        socket.on('add-player',async({playerId,lobbyId,socketId})=>{
+        socket.on('add-players',async({playerId,lobbyId,socketId})=>{
             console.log("Oldplayer added to new joinee")
             socket.to(lobbyId).emit('add-player',{playerId:playerId,socketId:socketId})
         })
