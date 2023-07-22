@@ -117,13 +117,13 @@ export default function Lobby() {
     useEffect(() => {
         const guest = searchParams.get("lobbyName")
         console.log(guest);
-        if(router.query.lobbyName === `${lobbyId}?guest=true`){
-            console.log("GUEST MODE")
-        }
-        else{
+        // if(router.query.lobbyName === `${lobbyId}?guest=true`){
+        //     console.log("GUEST MODE")
+        // }
+        // else{
             
-            console.log("NOT GUEST MODE: " + guest)
-        }
+        //     console.log("NOT GUEST MODE: " + guest)
+        // }
         setIsGuest(router.query.guest === "true")
         const playerId = localStorage.getItem('PetaTypeUiD');
         const playerName = localStorage.getItem('PetaTypeUName');
