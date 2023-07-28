@@ -8,6 +8,7 @@ export default function Typer({
     setActive,
     gameEnded,
     setGameEnded,
+    initialTime,
     timer,
     setTimer,
     progress,
@@ -52,7 +53,7 @@ export default function Typer({
         let completedLetterCount = 0
         let correctLetterCount = 0
         let incorrectLetterCount = 0
-        let timeElapsed = 30 - timer;
+        let timeElapsed = initialTime - timer;
         textMap.forEach((word) => {
             word.forEach((letter) => {
                 if (letter.status === 1) {
@@ -65,7 +66,8 @@ export default function Typer({
             })
 
         })
-        setWpm(Math.round((completedLetterCount) / (timeElapsed / 60))) // Number of words completed = (Completed letters / 5)           
+    
+        setWpm(Math.round((completedLetterCount/5) / (timeElapsed / 60))) // Number of words completed = (Completed letters / 5)           
         setAccuracy(Math.round((correctLetterCount / completedLetterCount) * 100))         // WPM = number of words completed / minutes elapsed
         setProgress(Math.round((completedLetterCount / text.length) * 100))
 
@@ -152,7 +154,7 @@ export default function Typer({
     useEffect(() => {
         if (timer <= 0 && active) {
             setActive(false);
-            setTimer(10);
+            setTimer(initialTime);
             setGameEnded(true);
             setPreviousWpm(wpm);
             setPreviousAccuracy(accuracy);
@@ -160,7 +162,12 @@ export default function Typer({
             setAccuracy(0);
         }
         computeStats();
-    }, [timer])
+    }, [timer,initialTime])
+
+
+    // useEffect(() => {
+
+    // },[initialTime])
 
     useEffect(() => {
         let interval;
@@ -173,11 +180,11 @@ export default function Typer({
         return () => clearInterval(interval);
     }, [active, timer]);
 
-    useEffect(() => {
-        if (gameEnded) {
-            initTextMap();
-        }
-    }, [gameEnded])
+    // useEffect(() => {
+    //     if (gameEnded) {
+    //         initTextMap();
+    //     }
+    // }, [gameEnded])
 
 
     return (

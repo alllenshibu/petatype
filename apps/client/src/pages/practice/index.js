@@ -16,7 +16,9 @@ export default function Practice() {
 
     const [active, setActive] = useState(false);
     const [gameEnded, setGameEnded] = useState(false);
-    const [timer, setTimer] = useState(10);
+
+    const [initialTime,setInitialTime] = useState(30);
+    const [timer, setTimer] = useState(30);
     const [progress, setProgress] = useState(0);
 
     const [wpm, setWpm] = useState(0);
@@ -39,7 +41,7 @@ export default function Practice() {
         } else if (gameEnded === true) {
             setGameEnded(false);
             setActive(true);
-            setTimer(10);
+            setTimer(initialTime);
             setWpm(0);
             setAccuracy(0);
             setSpeedTimeGraph([]);
@@ -84,9 +86,10 @@ export default function Practice() {
                                 <input
                                     type='number'
                                     min='1'
-                                    value={timer}
+                                    value={initialTime}
                                     onChange={(e) => {
                                         setTimer(e.target.value);
+                                        setInitialTime(e.target.value);
                                     }} />
 
                             </div>
@@ -101,6 +104,7 @@ export default function Practice() {
                     >
                         <Typer
                             text={text}
+                            initialTime={initialTime}
                             active={active}
                             setActive={setActive}
                             gameEnded={gameEnded}

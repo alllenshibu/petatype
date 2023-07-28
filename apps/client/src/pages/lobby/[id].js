@@ -12,8 +12,10 @@ export default function Lobby() {
     const searchParams = useSearchParams()
     const [text, setText] = useState("");
     const [textFetched, setTextFetched] = useState(false);
+
     const [difficulty, setDifficulty] = useState("easy");
 
+    const [initialTime,setInitialTime] = useState(30);
     const [timer, setTimer] = useState(30);
     const [countdown, setCountdown] = useState(5);
 
@@ -52,6 +54,7 @@ export default function Lobby() {
             console.log(Lobbyplayers);
             setGameEnded(false);
             setTimer(30);
+            setInitialTime(30);
             setWpm(0);
             setAccuracy(0);
             setSpeedTimeGraph([]);
@@ -305,7 +308,6 @@ export default function Lobby() {
                                     <p>Mode</p>
                                     <select onChange={(e) => {
                                         setDifficulty(e.target.value);
-                                        fetchText();
                                     }}>
                                         <option value="easy">Easy</option>
                                         <option value="medium">Medium</option>
@@ -317,9 +319,10 @@ export default function Lobby() {
                                     <input
                                         type='number'
                                         min='1'
-                                        value={timer}
+                                        value={initialTime}
                                         onChange={(e) => {
                                             setTimer(e.target.value);
+                                            setInitialTime(e.target.value)
                                         }} />
 
                                 </div>
@@ -338,6 +341,7 @@ export default function Lobby() {
                             }}
                         >
                             <Typer
+                                initialTime={initialTime}
                                 text={text}
                                 active={active}
                                 setActive={setActive}
