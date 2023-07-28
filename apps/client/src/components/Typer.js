@@ -213,7 +213,7 @@ export default function Typer({
                     var colors = "grey";
                     var classname;
                     if (letter.status === 1) {
-                        colors = "white";
+                        colors = "#FFFFFF";
                     }
                     else if (letter.status === 0) {
                         colors = "#ED2939";
@@ -239,9 +239,9 @@ export default function Typer({
                         autoFocus="true"
                         id="user-input"
                         ref={textRef}
-                        onKeyDown={() => {
+                        onKeyDown={(event) => {
                             if (active) {
-                                handleBackSpace
+                                handleBackSpace(event)
                             }
                         }}
                         type="text"
